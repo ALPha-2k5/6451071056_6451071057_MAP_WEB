@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../data/models/product_review_model.dart';
-import '../data/models/customer_model.dart';
-import '../data/services/product_review_service.dart';
-import '../data/services/customer_service.dart';
+import '../data/model/product_review_model.dart';
+import '../data/model/customer_model.dart';
+import '../data/service/product_review_service.dart';
+import '../data/service/customer_service.dart';
 
 class ReviewController extends ChangeNotifier {
   final ReviewService reviewService = ReviewService();
