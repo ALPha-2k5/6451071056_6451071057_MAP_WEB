@@ -1,71 +1,76 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class OrderModel {
-	final String docId;
-	final String id;
-	final String userId;
-	final List<dynamic> products;
-	final double totalAmount;
-	final int itemCount;
-	final DateTime orderDate;
-	final DateTime updatedAt;
-	String orderStatus;
-	String paymentStatus;
-
-	OrderModel({
-		required this.docId,
-		required this.id,
-		required this.userId,
-		required this.products,
-		required this.totalAmount,
-		required this.itemCount,
-		required this.orderDate,
-		required this.updatedAt,
-		required this.orderStatus,
-		required this.paymentStatus,
-	});
-
-	factory OrderModel.fromFirestore(DocumentSnapshot doc) {
-		final data = doc.data() as Map<String, dynamic>? ?? <String, dynamic>{};
-
-		return OrderModel(
-			docId: doc.id,
-			id: (data['id'] ?? doc.id).toString(),
-			userId: (data['userId'] ?? '').toString(),
-			products: (data['products'] as List<dynamic>?) ?? <dynamic>[],
-			totalAmount: _toDouble(data['totalAmount']),
-			itemCount: _toInt(data['itemCount']),
-			orderDate: _toDateTime(data['orderDate']),
-			updatedAt: _toDateTime(data['updatedAt']),
-			orderStatus: (data['orderStatus'] ?? 'pending').toString(),
-			paymentStatus: (data['paymentStatus'] ?? 'pending').toString(),
-		);
-	}
-
-	static double _toDouble(dynamic value) {
-		if (value is num) {
-			return value.toDouble();
-		}
-		return double.tryParse(value?.toString() ?? '') ?? 0;
-	}
-
-	static int _toInt(dynamic value) {
-		if (value is int) {
-			return value;
-		}
-		if (value is num) {
-			return value.toInt();
-		}
-		return int.tryParse(value?.toString() ?? '') ?? 0;
-	}
-
-	static DateTime _toDateTime(dynamic value) {
-		if (value is Timestamp) {
-			return value.toDate();
-		}
-		if (value is DateTime) {
-			return value;
-		}
-		return DateTime.tryParse(value?.toString() ?? '') ?? DateTime(2000);
-	}
+final String docId;
+final String id;
+final String userId;
+final List<dynamic> products;
+final double subTotal;
+final double taxAmount;
+final double taxRate;
+final double shippingAmount;
+final double totalDiscountAmount;
+final double couponDiscountAmount;
+final double totalAmount;
+final String paymentStatus;
+final String orderStatus;
+final String paymentMethod;
+final String paymentMethodType;
+final int itemCount;
+final DateTime orderDate;
+final DateTime createdAt;
+final DateTime updatedAt;
+final DateTime? shippingDate;
+final Map<String, dynamic> shippingAddress;
+// 👇 Admin list helper fields
+String customerName;
+OrderModel({
+required this.docId,
+required this.id,
+required this.userId,
+required this.products,
+required this.subTotal,
+required this.taxAmount,
+required this.taxRate,
+required this.shippingAmount,
+required this.totalDiscountAmount,
+required this.couponDiscountAmount,
+required this.totalAmount,
+required this.paymentStatus,
+required this.orderStatus,
+required this.paymentMethod,
+required this.paymentMethodType,
+required this.itemCount,
+required this.orderDate,
+required this.createdAt,
+required this.updatedAt,
+required this.shippingAddress,
+this.shippingDate,
+this.customerName = '',
+});
+factory OrderModel.fromFirestore(DocumentSnapshot doc) {
+final data = doc.data() as Map<String, dynamic>;
+return OrderModel(
+docId: doc.id,
+id: data['id'] ?? '',
+userId: data['userId'] ?? '',
+products: data['products'] ?? [],
+subTotal: (data['subTotal'] ?? 0).toDouble(),
+taxAmount: (data['taxAmount'] ?? 0).toDouble(),
+taxRate: (data['taxRate'] ?? 0).toDouble(),
+shippingAmount: (data['shippingAmount'] ?? 0).toDouble(),
+totalDiscountAmount: (data['totalDiscountAmount'] ?? 0).toDouble(),
+couponDiscountAmount: (data['couponDiscountAmount'] ?? 0).toDouble(),
+totalAmount: (data['totalAmount'] ?? 0).toDouble(),
+paymentStatus: data['paymentStatus'] ?? '',
+orderStatus: data['orderStatus'] ?? '',
+paymentMethod: data['paymentMethod'] ?? '',
+paymentMethodType: data['paymentMethodType'] ?? '',
+itemCount: data['itemCount'] ?? 0,
+orderDate: (data['orderDate'] as Timestamp).toDate(),
+createdAt: (data['createdAt'] as Timestamp).toDate(),
+updatedAt: (data['updatedAt'] as Timestamp).toDate(),
+shippingDate: (data['shippingDate'] as Timestamp?)?.toDate(),
+shippingAddress: data['shippingAddress'] ?? {},
+);
+}
 }
