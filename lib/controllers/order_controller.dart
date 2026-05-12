@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../data/model/order_model.dart';
-import '../data/service/order_service.dart';
+import '../data/models/order_model.dart';
+import '../data/services/order_service.dart';
 
 class OrderController {
   final OrderService _service = OrderService();
