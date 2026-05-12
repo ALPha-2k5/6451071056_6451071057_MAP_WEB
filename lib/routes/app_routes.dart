@@ -77,3 +77,4 @@ class AppRouteParser extends RouteInformationParser<String> {
     return RouteInformation(location: configuration);
   }
 }
+//

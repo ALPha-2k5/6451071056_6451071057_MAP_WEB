@@ -6,3 +6,4 @@ class BrandCategoryModel {
     return {'brandId': brandId, 'categoryId': categoryId};
   }
 }
+//
