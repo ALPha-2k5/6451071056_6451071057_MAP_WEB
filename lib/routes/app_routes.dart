@@ -1,5 +1,9 @@
 import 'package:thuchanhweb/views/customers/customers_page.dart';
 import 'package:thuchanhweb/views/product_review/all_review_screen.dart';
+import 'package:thuchanhweb/views/brands/brands_page.dart';
+import 'package:thuchanhweb/views/coupons/coupons_page.dart';
+import 'package:thuchanhweb/views/orders/orders_page.dart';
+import 'package:thuchanhweb/views/products/product_list_page.dart';
 import 'package:flutter/material.dart';
 import '../views/auth/login_page.dart';
 import '../views/layout/admin_layout.dart';
@@ -11,6 +15,7 @@ import '../views/attributes/attribute_page.dart';
 import '../views/dashboard/dashboard_page.dart';
 import '../views/coupons/coupons_page.dart';
 import '../views/orders/orders_page.dart';
+import '../views/attributes/attribute_page.dart';
 
 class AppRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
@@ -42,17 +47,18 @@ class AppRouterDelegate extends RouterDelegate<String>
         break;
       case "/coupons":
         page = const CouponsPage();
+      case "/orders":
+        page = const OrderPage();
         break;
       case "/brands":
         page = const BrandsPage();
         break;
-      case "/orders":
-        page = const OrderPage();
+      case "/products":
+        page = const ProductListPage();
         break;
       case "/categories":
         page = const CategoriesPage();
-        break;
-      case "/customers":
+        break;      case "/customers":
         page = const CustomersPage();
         break;
       case "/reviews":
