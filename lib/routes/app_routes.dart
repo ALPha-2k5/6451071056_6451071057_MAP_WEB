@@ -1,3 +1,5 @@
+import 'package:thuchanhweb/views/customers/customers_page.dart';
+import 'package:thuchanhweb/views/product_review/all_review_screen.dart';
 import 'package:thuchanhweb/views/brands/brands_page.dart';
 import 'package:thuchanhweb/views/coupons/coupons_page.dart';
 import 'package:thuchanhweb/views/orders/orders_page.dart';
@@ -7,6 +9,12 @@ import '../views/auth/login_page.dart';
 import '../views/layout/admin_layout.dart';
 import '../views/cagetories/category_page.dart';
 import '../controllers/auth_controller.dart';
+import '../views/brands/brands_page.dart';
+import '../views/products/product_list_page.dart';
+import '../views/attributes/attribute_page.dart';
+import '../views/dashboard/dashboard_page.dart';
+import '../views/coupons/coupons_page.dart';
+import '../views/orders/orders_page.dart';
 import '../views/attributes/attribute_page.dart';
 
 class AppRouterDelegate extends RouterDelegate<String>
@@ -31,23 +39,33 @@ class AppRouterDelegate extends RouterDelegate<String>
     }
     Widget page;
     switch (_currentPath) {
+      case "/products":
+        page = const ProductListPage();
+        break;
       case "/attributes":
         page = const AttributesPage();
         break;
+      case "/coupons":
+        page = const CouponsPage();
       case "/orders":
         page = const OrderPage();
         break;
       case "/brands":
         page = const BrandsPage();
         break;
-      case "/coupons":
-        page = const CouponsPage();
-        break;
       case "/products":
         page = const ProductListPage();
         break;
       case "/categories":
         page = const CategoriesPage();
+        break;      case "/customers":
+        page = const CustomersPage();
+        break;
+      case "/reviews":
+        page = const AllReviewScreen();
+        break;
+      case "/dashboard":
+        page = const MyDashboard();
         break;
       default:
         page = const Center(child: Text("Dashboard Page"));
