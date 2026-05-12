@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:thuchanhweb/data/models/address_model.dart';
-import 'package:thuchanhweb/data/models/customer_model.dart';
-import 'package:thuchanhweb/data/models/order_model.dart';
+import 'package:thuchanhweb/data/model/address_model.dart';
+import 'package:thuchanhweb/data/model/customer_model.dart';
+import 'package:thuchanhweb/data/model/order_model.dart';
 
 class CustomerDetailPage extends StatefulWidget {
   final CustomerModel customer;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../data/models/customer_model.dart';
-import '../data/services/customer_service.dart';
+import '../data/model/customer_model.dart';
+import '../data/service/customer_service.dart';
 
 class CustomerController extends ChangeNotifier {
   CustomerController({CustomerService? service})
