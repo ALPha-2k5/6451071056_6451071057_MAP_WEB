@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/order_controller.dart';
-import '../../data/models/order_model.dart';
+import '../../data/model/order_model.dart';
 import 'order_detail_page.dart';
 
 class OrderPage extends StatefulWidget {

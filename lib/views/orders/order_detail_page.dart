@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../data/models/order_model.dart';
+import '../../data/model/order_model.dart';
 import '../../controllers/order_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
