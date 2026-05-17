@@ -27,6 +27,14 @@ class CategoryModel {
     required this.createdBy,
     required this.updatedBy,
   });
+  static DateTime? _parseDate(dynamic date) {
+    if (date == null) return null;
+    if (date is Timestamp) return date.toDate();
+    if (date is DateTime) return date;
+    if (date is String) return DateTime.tryParse(date);
+    return null;
+  }
+
   factory CategoryModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return CategoryModel(
@@ -36,8 +44,8 @@ class CategoryModel {
       isActive: data['isActive'] ?? true,
       isFeatured: data['isFeatured'] ?? false,
       priority: data['priority'] ?? 0,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
+      createdAt: _parseDate(data['createdAt']),
+      updatedAt: _parseDate(data['updatedAt']),
       numberOfProducts: data['numberOfProducts'] ?? 0,
       viewCount: data['viewCount'] ?? 0,
       createdBy: data['createdBy'] ?? '',

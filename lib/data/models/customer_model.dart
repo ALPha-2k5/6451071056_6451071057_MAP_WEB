@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class CustomerModel {
   String id;
   String firstName;
@@ -18,6 +20,17 @@ class CustomerModel {
     this.createdAt,
   });
   factory CustomerModel.fromMap(Map<String, dynamic> map) {
+    DateTime? parsedDate;
+    final val = map['createdAt'];
+    if (val != null) {
+      if (val is Timestamp) {
+        parsedDate = val.toDate();
+      } else if (val is DateTime) {
+        parsedDate = val;
+      } else if (val is String) {
+        parsedDate = DateTime.tryParse(val);
+      }
+    }
     return CustomerModel(
       id: map['id'] ?? '',
       firstName: map['firstName'] ?? '',
@@ -26,9 +39,7 @@ class CustomerModel {
       phone: map['phone'] ?? '',
       username: map['username'] ?? '',
       gender: map['gender'] ?? 'Not set',
-      createdAt: map['createdAt'] != null
-          ? DateTime.tryParse(map['createdAt'])
-          : null,
+      createdAt: parsedDate,
     );
   }
   String get fullName => "$firstName $lastName";

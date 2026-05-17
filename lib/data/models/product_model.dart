@@ -130,6 +130,14 @@ class ProductModel {
     };
   }
 
+  static DateTime? _parseDate(dynamic date) {
+    if (date == null) return null;
+    if (date is Timestamp) return date.toDate();
+    if (date is DateTime) return date;
+    if (date is String) return DateTime.tryParse(date);
+    return null;
+  }
+
   // From Firestore
   factory ProductModel.fromMap(String id, Map<String, dynamic> map) {
     return ProductModel(
@@ -160,8 +168,8 @@ class ProductModel {
       isDraft: map['isDraft'] ?? false,
       isDeleted: map['isDeleted'] ?? false,
       onSale: map['onSale'],
-      saleStartDate: map['saleStartDate']?.toDate(),
-      saleEndDate: map['saleEndDate']?.toDate(),
+      saleStartDate: _parseDate(map['saleStartDate']),
+      saleEndDate: _parseDate(map['saleEndDate']),
       views: map['views'] ?? 0,
       rating: (map['rating'] ?? 0).toDouble(),
       ratingCount: map['ratingCount'] ?? 0,
@@ -174,8 +182,8 @@ class ProductModel {
       likes: map['likes'] ?? 0,
       createdBy: map['createdBy'],
       updatedBy: map['updatedBy'],
-      createdAt: map['createdAt']?.toDate(),
-      updatedAt: map['updatedAt']?.toDate(),
+      createdAt: _parseDate(map['createdAt']),
+      updatedAt: _parseDate(map['updatedAt']),
     );
   }
 }

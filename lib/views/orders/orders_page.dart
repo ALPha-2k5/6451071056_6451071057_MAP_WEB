@@ -34,23 +34,34 @@ class _OrderPageState extends State<OrderPage> {
   /// LOGIC MÀU SẮC CHO ORDER STATUS
   Color _getOrderStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'pending': return Colors.orange;
-      case 'processing': return Colors.lightBlue;
-      case 'shipped': return Colors.blueAccent;
-      case 'delivered': return Colors.green;
-      case 'canceled': return Colors.red;
-      case 'returned': return Colors.purple;
-      case 'refunded': return Colors.blueGrey;
-      default: return Colors.grey;
+      case 'pending':
+        return Colors.orange;
+      case 'processing':
+        return Colors.lightBlue;
+      case 'shipped':
+        return Colors.blueAccent;
+      case 'delivered':
+        return Colors.green;
+      case 'canceled':
+        return Colors.red;
+      case 'returned':
+        return Colors.purple;
+      case 'refunded':
+        return Colors.blueGrey;
+      default:
+        return Colors.grey;
     }
   }
 
   /// LOGIC MÀU SẮC CHO PAYMENT STATUS
   Color _getPaymentStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'paid': return Colors.green;
-      case 'pending': return Colors.redAccent;
-      default: return Colors.grey;
+      case 'paid':
+        return Colors.green;
+      case 'pending':
+        return Colors.redAccent;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -127,7 +138,10 @@ class _OrderPageState extends State<OrderPage> {
                               rows: controller.filteredOrders
                                   .asMap()
                                   .entries
-                                  .map((entry) => _buildDataRow(entry.value, entry.key))
+                                  .map(
+                                    (entry) =>
+                                        _buildDataRow(entry.value, entry.key),
+                                  )
                                   .toList(),
                             ),
                           ),
@@ -148,7 +162,10 @@ class _OrderPageState extends State<OrderPage> {
         DataCell(
           Text(
             "#${order.id}",
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
           ),
         ),
         DataCell(
@@ -168,7 +185,12 @@ class _OrderPageState extends State<OrderPage> {
           ),
         ),
         DataCell(Text("${order.itemCount} sp")),
-        DataCell(_buildBadge(order.orderStatus, _getOrderStatusColor(order.orderStatus))),
+        DataCell(
+          _buildBadge(
+            order.orderStatus,
+            _getOrderStatusColor(order.orderStatus),
+          ),
+        ),
         DataCell(
           _buildBadge(
             order.paymentStatus,
@@ -178,7 +200,7 @@ class _OrderPageState extends State<OrderPage> {
         ),
         DataCell(
           Text(
-            "\$${order.totalAmount.toStringAsFixed(0)}",
+            "${NumberFormat("#,###").format(order.totalAmount)} đ",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -189,11 +211,17 @@ class _OrderPageState extends State<OrderPage> {
               _buildActionIcon(Icons.remove_red_eye, Colors.blue, () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => OrderDetailPage(order: order)),
+                  MaterialPageRoute(
+                    builder: (_) => OrderDetailPage(order: order),
+                  ),
                 );
               }),
               const SizedBox(width: 8),
-              _buildActionIcon(Icons.delete_sweep, Colors.red, () => _confirmDelete(order)),
+              _buildActionIcon(
+                Icons.delete_sweep,
+                Colors.red,
+                () => _confirmDelete(order),
+              ),
             ],
           ),
         ),
@@ -302,7 +330,10 @@ class _HeaderLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label,
-      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
     );
   }
 }

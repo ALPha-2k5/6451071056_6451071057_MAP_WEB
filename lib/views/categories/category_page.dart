@@ -7,12 +7,9 @@ class CategoriesPage extends StatelessWidget {
   const CategoriesPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => CategoryController()..fetchCategories(),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FA), // Màu nền nhẹ nhàng
-        body: const _CategoriesView(),
-      ),
+    return const Scaffold(
+      backgroundColor: Color(0xFFF8F9FA),
+      body: _CategoriesView(),
     );
   }
 }
@@ -102,6 +99,7 @@ class _CategoriesView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       child: SingleChildScrollView(
                         child: DataTable(
+                          showCheckboxColumn: false,
                           headingRowColor: MaterialStateProperty.all(
                             const Color(0xFFF1F3F5),
                           ),

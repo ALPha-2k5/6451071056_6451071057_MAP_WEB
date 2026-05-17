@@ -21,6 +21,14 @@ class BrandModel {
     this.createdAt,
     this.updatedAt,
   });
+  static DateTime? _parseDate(dynamic date) {
+    if (date == null) return null;
+    if (date is Timestamp) return date.toDate();
+    if (date is DateTime) return date;
+    if (date is String) return DateTime.tryParse(date);
+    return null;
+  }
+
   factory BrandModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return BrandModel(
@@ -31,8 +39,8 @@ class BrandModel {
       isActive: data['isActive'] ?? true,
       productsCount: data['productsCount'] ?? 0,
       viewCount: data['viewCount'] ?? 0,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate(),
+      createdAt: _parseDate(data['createdAt']),
+      updatedAt: _parseDate(data['updatedAt']),
     );
   }
   Map<String, dynamic> toMap() {

@@ -3,7 +3,7 @@ import '../controllers/auth_controller.dart';
 import '../views/auth/login_page.dart';
 import '../views/layout/admin_layout.dart';
 import '../views/dashboard/dashboard_page.dart';
-import '../views/cagetories/category_page.dart';
+import '../views/categories/category_page.dart';
 import '../views/attributes/attribute_page.dart';
 import '../views/brands/brands_page.dart';
 import '../views/coupons/coupons_page.dart';
@@ -16,10 +16,15 @@ class AppRouterDelegate extends RouterDelegate<String>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<String> {
   final GlobalKey<NavigatorState> navigatorKey;
   final AuthController authController;
-  String _currentPath = "/login";
+  String _currentPath = "/dashboard";
   AppRouterDelegate(this.authController)
     : navigatorKey = GlobalKey<NavigatorState>() {
-    authController.addListener(notifyListeners);
+    authController.addListener(() {
+      if (authController.isLoggedIn && (_currentPath == "/login" || _currentPath.isEmpty)) {
+        _currentPath = "/dashboard";
+      }
+      notifyListeners();
+    });
   }
   @override
   String? get currentConfiguration => _currentPath;
@@ -101,3 +106,4 @@ class AppRouteParser extends RouteInformationParser<String> {
     return RouteInformation(location: configuration);
   }
 }
+

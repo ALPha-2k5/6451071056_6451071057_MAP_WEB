@@ -29,6 +29,14 @@ class CouponModel {
     this.createdAt,
     this.updateAt,
   });
+  static DateTime? _parseDate(dynamic date) {
+    if (date == null) return null;
+    if (date is Timestamp) return date.toDate();
+    if (date is DateTime) return date;
+    if (date is String) return DateTime.tryParse(date);
+    return null;
+  }
+
   factory CouponModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return CouponModel(
@@ -39,13 +47,13 @@ class CouponModel {
           ? DiscountType.flat
           : DiscountType.percentage,
       discountValue: (data['discountValue'] ?? 0).toDouble(),
-      startDate: (data['startDate'] as Timestamp?)?.toDate(),
-      endDate: (data['endDate'] as Timestamp?)?.toDate(),
+      startDate: _parseDate(data['startDate']),
+      endDate: _parseDate(data['endDate']),
       usageLimit: data['usageLimit'] ?? 0,
       usageCount: data['usageCount'] ?? 0,
       isActive: data['isActive'] ?? true,
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate(),
-      updateAt: (data['updateAt'] as Timestamp?)?.toDate(),
+      createdAt: _parseDate(data['createdAt']),
+      updateAt: _parseDate(data['updateAt']),
     );
   }
   Map<String, dynamic> toMap() {

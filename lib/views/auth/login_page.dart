@@ -11,18 +11,18 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
-  bool _isObscure = true;
+  bool isPasswordVisible = false;
   @override
   Widget build(BuildContext context) {
     final auth = context.read<AuthController>();
     return Scaffold(
       body: Container(
-        // Tạo nền Gradient chuyển màu sinh động
+        // Tạo nền Gradient chuyển màu sinh động (Chủ đề Trái Cây Sạch)
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.blue.shade900, Colors.teal.shade400],
+            colors: [Colors.green.shade800, Colors.lightGreen.shade500],
           ),
         ),
         child: Center(
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
                 width: 350,
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withOpacity(0.95),
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
@@ -56,22 +56,22 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Icon đại diện cho ngành Y tế/OCR
+                    // Icon đại diện cho Cửa hàng Trái cây
                     Container(
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: Colors.green.shade50,
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.medical_services_rounded,
+                        Icons.eco_rounded,
                         size: 50,
-                        color: Colors.blue.shade800,
+                        color: Colors.green.shade800,
                       ),
                     ),
                     const SizedBox(height: 20),
                     const Text(
-                      "ADMIN LOGIN",
+                      "ORGANIC FRUIT",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -79,23 +79,26 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
                     const Text(
-                      "Hệ thống nhận diện tên thuốc",
-                      style: TextStyle(color: Colors.grey),
+                      "Quản trị Hệ thống Cửa hàng Trái cây Sạch",
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 30),
                     // TextField Tên đăng nhập
                     TextField(
                       controller: usernameController,
                       decoration: InputDecoration(
+                        labelText: "Tên đăng nhập",
+                        hintText: "Nhập tài khoản (admin)",
                         prefixIcon: const Icon(Icons.person_outline),
-                        labelText: "Username",
-                        filled: true,
-                        fillColor: Colors.grey.shade100,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: Colors.green.shade800),
                         ),
                       ),
                     ),
@@ -103,29 +106,34 @@ class _LoginPageState extends State<LoginPage> {
                     // TextField Mật khẩu
                     TextField(
                       controller: passwordController,
-                      obscureText: _isObscure,
+                      obscureText: !isPasswordVisible,
                       decoration: InputDecoration(
+                        labelText: "Mật khẩu",
+                        hintText: "Nhập mật khẩu (123@456)",
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _isObscure
+                            isPasswordVisible
                                 ? Icons.visibility
                                 : Icons.visibility_off,
                           ),
-                          onPressed: () =>
-                              setState(() => _isObscure = !_isObscure),
+                          onPressed: () {
+                            setState(() {
+                              isPasswordVisible = !isPasswordVisible;
+                            });
+                          },
                         ),
-                        labelText: "Password",
-                        filled: true,
-                        fillColor: Colors.grey.shade100,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
-                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: BorderSide(color: Colors.green.shade800),
                         ),
                       ),
                     ),
                     const SizedBox(height: 30),
-                    // Nút Login với hiệu ứng Gradient
+                    // Nút Đăng nhập
                     SizedBox(
                       width: double.infinity,
                       height: 55,
@@ -158,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade800,
+                          backgroundColor: Colors.green.shade800,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),

@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import '../../controllers/order_controller.dart';
 import '../../data/models/order_model.dart';
+import '../../data/services/seed_service.dart';
 
 class MyDashboard extends StatefulWidget {
   const MyDashboard({super.key});
@@ -108,6 +109,45 @@ class _MyDashboardState extends State<MyDashboard> {
                     color: Color(0xFF1A1C1E),
                   ),
                 ),
+                const Spacer(),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    setState(() => isLoading = true);
+                    try {
+                      final seed = SeedService();
+                      await seed.seedAll();
+                      await loadDashboard();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Dữ liệu đã được nạp thành công!"),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
+                      }
+                    } finally {
+                      setState(() => isLoading = false);
+                    }
+                  },
+                  icon: const Icon(Icons.cloud_upload_rounded),
+                  label: const Text("Nạp Dữ Liệu Mẫu"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 30),
@@ -118,7 +158,7 @@ class _MyDashboardState extends State<MyDashboard> {
                 Expanded(
                   child: statCard(
                     "Tổng Doanh Thu",
-                    money(totalSale),
+                    "${money(totalSale)} đ",
                     Icons.monetization_on_rounded,
                     [Colors.blue, Colors.blueAccent],
                   ),
@@ -127,7 +167,7 @@ class _MyDashboardState extends State<MyDashboard> {
                 Expanded(
                   child: statCard(
                     "Giá Trị TB",
-                    money(avgOrderValue),
+                    "${money(avgOrderValue)} đ",
                     Icons.auto_graph_rounded,
                     [Colors.purple, Colors.deepPurpleAccent],
                   ),
@@ -438,19 +478,37 @@ class _MyDashboardState extends State<MyDashboard> {
             FlLine(color: Colors.grey[100], strokeWidth: 1),
       ),
       titlesData: FlTitlesData(
-        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            reservedSize: 60,
+            getTitlesWidget: (value, meta) {
+              if (value == 0) {
+                return const Text("0 đ", style: TextStyle(fontSize: 10, color: Colors.grey));
+              }
+              return Text(
+                "${NumberFormat.compact().format(value)} đ",
+                style: const TextStyle(color: Colors.grey, fontSize: 10),
+              );
+            },
+          ),
+        ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
+            interval: 1.0,
+            reservedSize: 32,
             getTitlesWidget: (value, meta) {
               const days = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
-              if (value.toInt() >= 0 && value.toInt() < days.length) {
+              int idx = value.toInt();
+              if (idx >= 0 && idx < days.length && value == idx.toDouble()) {
                 return Padding(
                   padding: const EdgeInsets.only(top: 10),
                   child: Text(
-                    days[value.toInt()],
-                    style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    days[idx],
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.bold),
                   ),
                 );
               }

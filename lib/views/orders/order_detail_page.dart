@@ -47,14 +47,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     }
   }
 
+  String _money(num value) => NumberFormat("#,###").format(value);
+
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'delivered': return Colors.green;
-      case 'pending': return Colors.orange;
-      case 'processing': return Colors.blue;
-      case 'shipped': return Colors.indigo;
-      case 'canceled': return Colors.red;
-      default: return Colors.blueGrey;
+      case 'delivered':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'processing':
+        return Colors.blue;
+      case 'shipped':
+        return Colors.indigo;
+      case 'canceled':
+        return Colors.red;
+      default:
+        return Colors.blueGrey;
     }
   }
 
@@ -76,10 +84,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   DropdownButtonFormField<String>(
                     value: statusInDialog,
                     items: ["pending", "paid", "failed"]
-                        .map((e) => DropdownMenuItem(
-                              value: e,
-                              child: Text(e.toUpperCase()),
-                            ))
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e.toUpperCase()),
+                          ),
+                        )
                         .toList(),
                     onChanged: (value) => statusInDialog = value!,
                   ),
@@ -123,7 +133,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             ElevatedButton(
               child: const Text("Cập nhật"),
               onPressed: () async {
-                double amountReceived = double.tryParse(amountController.text) ?? 0;
+                double amountReceived =
+                    double.tryParse(amountController.text) ?? 0;
                 await controller.updateTransaction(
                   order: order,
                   amountReceived: amountReceived,
@@ -153,7 +164,10 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       appBar: AppBar(
         title: Text(
           "Chi tiết đơn hàng #${order.id.characters.take(8)}",
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
         ),
         backgroundColor: Colors.white,
         elevation: 0.5,
@@ -178,9 +192,21 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       icon: Icons.info_outline,
                       child: Column(
                         children: [
-                          _infoRow("Ngày đặt", DateFormat('dd/MM/yyyy HH:mm').format(order.orderDate)),
-                          _infoRow("Số lượng mục", "${order.itemCount} sản phẩm"),
-                          _infoRow("Tổng thanh toán", "\$${order.totalAmount.toStringAsFixed(0)}", isPrice: true),
+                          _infoRow(
+                            "Ngày đặt",
+                            DateFormat(
+                              'dd/MM/yyyy HH:mm',
+                            ).format(order.orderDate),
+                          ),
+                          _infoRow(
+                            "Số lượng mục",
+                            "${order.itemCount} sản phẩm",
+                          ),
+                          _infoRow(
+                            "Tổng thanh toán",
+                            "${_money(order.totalAmount)} đ",
+                            isPrice: true,
+                          ),
                         ],
                       ),
                     ),
@@ -193,12 +219,29 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                         children: [
                           _buildProductTable(order),
                           const Divider(height: 32),
-                          _summaryRow("Tạm tính", "\$${order.subTotal.toStringAsFixed(0)}"),
-                          _summaryRow("Giảm giá Coupon", "-\$${order.couponDiscountAmount}", color: Colors.red),
-                          _summaryRow("Phí vận chuyển", "\$${order.shippingAmount}"),
-                          _summaryRow("Thuế", "\$${order.taxAmount.toStringAsFixed(0)}"),
+                          _summaryRow(
+                            "Tạm tính",
+                            "${_money(order.subTotal)} đ",
+                          ),
+                          _summaryRow(
+                            "Giảm giá Coupon",
+                            "-${_money(order.couponDiscountAmount)} đ",
+                            color: Colors.red,
+                          ),
+                          _summaryRow(
+                            "Phí vận chuyển",
+                            "${_money(order.shippingAmount)} đ",
+                          ),
+                          _summaryRow(
+                            "Thuế",
+                            "${_money(order.taxAmount)} đ",
+                          ),
                           const Divider(height: 32, thickness: 1),
-                          _summaryRow("Tổng cộng", "\$${order.totalAmount.toStringAsFixed(0)}", bold: true),
+                          _summaryRow(
+                            "Tổng cộng",
+                            "${_money(order.totalAmount)} đ",
+                            bold: true,
+                          ),
                         ],
                       ),
                     ),
@@ -221,10 +264,21 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           _infoRow(
                             "Trạng thái",
                             order.paymentStatus.toUpperCase(),
-                            color: order.paymentStatus == "paid" ? Colors.green : Colors.orange,
+                            color: order.paymentStatus == "paid"
+                                ? Colors.green
+                                : Colors.orange,
                           ),
-                          _infoRow("Ngày vận chuyển", order.shippingDate?.toString() ?? "Chưa có thông tin"),
-                          _infoRow("Số tiền khớp", order.paymentStatus == "pending" ? "\$0" : "\$${order.totalAmount.toStringAsFixed(0)}"),
+                          _infoRow(
+                            "Ngày vận chuyển",
+                            order.shippingDate?.toString() ??
+                                "Chưa có thông tin",
+                          ),
+                          _infoRow(
+                            "Số tiền khớp",
+                            order.paymentStatus == "pending"
+                                ? "0 đ"
+                                : "${_money(order.totalAmount)} đ",
+                          ),
                         ],
                       ),
                     ),
@@ -249,24 +303,56 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: Colors.grey[100],
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
                             ),
-                            items: statuses.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-                            onChanged: (value) => setState(() => selectedStatus = value!),
+                            items: statuses
+                                .map(
+                                  (s) => DropdownMenuItem(
+                                    value: s,
+                                    child: Text(s),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) =>
+                                setState(() => selectedStatus = value!),
                           ),
                           const SizedBox(height: 16),
                           SizedBox(
                             width: double.infinity,
                             height: 45,
                             child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueAccent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
                               onPressed: () async {
-                                await controller.updateOrderStatus(order, selectedStatus);
+                                await controller.updateOrderStatus(
+                                  order,
+                                  selectedStatus,
+                                );
                                 if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Cập nhật trạng thái thành công"), behavior: SnackBarBehavior.floating));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Cập nhật trạng thái thành công",
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
                                 }
                               },
-                              child: const Text("Cập nhật trạng thái", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              child: const Text(
+                                "Cập nhật trạng thái",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -284,15 +370,33 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 CircleAvatar(
                                   radius: 25,
                                   backgroundColor: Colors.blue.withOpacity(0.1),
-                                  child: Text(customerData!['firstName'][0], style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  child: Text(
+                                    customerData!['firstName'][0],
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text("${customerData!['firstName']} ${customerData!['lastName']}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                      Text(customerData!['email'], style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+                                      Text(
+                                        "${customerData!['firstName']} ${customerData!['lastName']}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        customerData!['email'],
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 13,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -307,7 +411,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.location_on, color: Colors.redAccent, size: 20),
+                          const Icon(
+                            Icons.location_on,
+                            color: Colors.redAccent,
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -328,14 +436,19 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           _buildActivityItem(
                             title: "Đơn hàng được khởi tạo",
                             subtitle: "Khách hàng đã đặt đơn thành công",
-                            time: DateFormat('dd/MM/yyyy HH:mm').format(order.orderDate),
+                            time: DateFormat(
+                              'dd/MM/yyyy HH:mm',
+                            ).format(order.orderDate),
                             isLast: false,
                             iconColor: Colors.blue,
                           ),
                           _buildActivityItem(
-                            title: "Trạng thái: ${order.orderStatus.toUpperCase()}",
+                            title:
+                                "Trạng thái: ${order.orderStatus.toUpperCase()}",
                             subtitle: "Cập nhật lần cuối bởi hệ thống",
-                            time: DateFormat('dd/MM/yyyy HH:mm').format(order.updatedAt),
+                            time: DateFormat(
+                              'dd/MM/yyyy HH:mm',
+                            ).format(order.updatedAt),
                             isLast: true,
                             iconColor: _getStatusColor(order.orderStatus),
                           ),
@@ -353,17 +466,34 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   }
 
   // --- Helper Widgets giữ nguyên logic gốc nhưng được format đẹp hơn ---
-  Widget _buildActivityItem({required String title, required String subtitle, required String time, required bool isLast, required Color iconColor}) {
+  Widget _buildActivityItem({
+    required String title,
+    required String subtitle,
+    required String time,
+    required bool isLast,
+    required Color iconColor,
+  }) {
     return IntrinsicHeight(
       child: Row(
         children: [
           Column(
             children: [
               Container(
-                width: 12, height: 12,
-                decoration: BoxDecoration(color: iconColor, shape: BoxShape.circle, border: Border.all(color: iconColor.withOpacity(0.2), width: 3)),
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: iconColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: iconColor.withOpacity(0.2),
+                    width: 3,
+                  ),
+                ),
               ),
-              if (!isLast) Expanded(child: VerticalDivider(thickness: 2, color: Colors.grey[300])),
+              if (!isLast)
+                Expanded(
+                  child: VerticalDivider(thickness: 2, color: Colors.grey[300]),
+                ),
             ],
           ),
           const SizedBox(width: 16),
@@ -371,10 +501,26 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
                 const SizedBox(height: 4),
-                Text(time, style: TextStyle(color: Colors.blueGrey[300], fontSize: 11, fontWeight: FontWeight.w500)),
+                Text(
+                  time,
+                  style: TextStyle(
+                    color: Colors.blueGrey[300],
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
                 if (!isLast) const SizedBox(height: 20),
               ],
             ),
@@ -388,7 +534,9 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(colors: [Colors.blue.shade800, Colors.blue.shade500]),
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade800, Colors.blue.shade500],
+        ),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -398,8 +546,18 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("ĐƠN HÀNG: #${order.id.characters.take(8).toString().toUpperCase()}", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-              Text("Trạng thái thanh toán: ${order.paymentStatus.toUpperCase()}", style: const TextStyle(color: Colors.white70)),
+              Text(
+                "ĐƠN HÀNG: #${order.id.characters.take(8).toString().toUpperCase()}",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              Text(
+                "Trạng thái thanh toán: ${order.paymentStatus.toUpperCase()}",
+                style: const TextStyle(color: Colors.white70),
+              ),
             ],
           ),
         ],
@@ -407,21 +565,50 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
     );
   }
 
-  Widget _buildAnimatedFrame({required int index, required String title, required IconData icon, required Widget child}) {
+  Widget _buildAnimatedFrame({
+    required int index,
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
     return TweenAnimationBuilder(
       duration: Duration(milliseconds: 400 + (index * 100)),
       tween: Tween<double>(begin: 0, end: 1),
-      builder: (context, double value, child) => Opacity(opacity: value, child: Transform.translate(offset: Offset(0, 20 * (1 - value)), child: child)),
+      builder: (context, double value, child) => Opacity(
+        opacity: value,
+        child: Transform.translate(
+          offset: Offset(0, 20 * (1 - value)),
+          child: child,
+        ),
+      ),
       child: Card(
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.shade200)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.grey.shade200),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(20),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [Icon(icon, size: 18, color: Colors.blueAccent), const SizedBox(width: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15))]),
-            const Divider(height: 24),
-            child,
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, size: 18, color: Colors.blueAccent),
+                  const SizedBox(width: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 24),
+              child,
+            ],
+          ),
         ),
       ),
     );
@@ -432,46 +619,130 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       headingRowColor: WidgetStateProperty.all(Colors.grey[50]),
       columnSpacing: 15,
       columns: const [
-        DataColumn(label: Text("SẢN PHẨM", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold))),
-        DataColumn(label: Text("ĐƠN GIÁ", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold))),
-        DataColumn(label: Text("SL", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold))),
-        DataColumn(label: Text("TỔNG", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold))),
+        DataColumn(
+          label: Text(
+            "SẢN PHẨM",
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+          ),
+        ),
+        DataColumn(
+          label: Text(
+            "ĐƠN GIÁ",
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+          ),
+        ),
+        DataColumn(
+          label: Text(
+            "SL",
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+          ),
+        ),
+        DataColumn(
+          label: Text(
+            "TỔNG",
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+          ),
+        ),
       ],
       rows: order.products.map<DataRow>((item) {
-        return DataRow(cells: [
-          DataCell(Row(children: [
-            ClipRRect(borderRadius: BorderRadius.circular(6), child: Image.network(item['image'], width: 35, height: 35, fit: BoxFit.cover)),
-            const SizedBox(width: 10),
-            Expanded(child: Text(item['title'], overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12))),
-          ])),
-          DataCell(Text("\$${item['price']}")),
-          DataCell(Text("x${item['quantity']}")),
-          DataCell(Text("\$${(item['price'] * item['quantity'])}", style: const TextStyle(fontWeight: FontWeight.bold))),
-        ]);
+        return DataRow(
+          cells: [
+            DataCell(
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      item['image'],
+                      width: 35,
+                      height: 35,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      item['title'],
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            DataCell(Text("${_money(item['price'])} đ")),
+            DataCell(Text("x${item['quantity']}")),
+            DataCell(
+              Text(
+                "${_money(item['price'] * item['quantity'])} đ",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
       }).toList(),
     );
   }
 
-  Widget _infoRow(String title, String value, {Color? color, bool isPrice = false}) {
+  Widget _infoRow(
+    String title,
+    String value, {
+    Color? color,
+    bool isPrice = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          SizedBox(width: 120, child: Text(title, style: TextStyle(color: Colors.grey[600], fontSize: 13))),
-          Expanded(child: Text(value, style: TextStyle(fontWeight: isPrice ? FontWeight.bold : FontWeight.w500, color: color ?? Colors.black87, fontSize: isPrice ? 15 : 13))),
+          SizedBox(
+            width: 120,
+            child: Text(
+              title,
+              style: TextStyle(color: Colors.grey[600], fontSize: 13),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontWeight: isPrice ? FontWeight.bold : FontWeight.w500,
+                color: color ?? Colors.black87,
+                fontSize: isPrice ? 15 : 13,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _summaryRow(String title, String value, {bool bold = false, Color? color}) {
+  Widget _summaryRow(
+    String title,
+    String value, {
+    bool bold = false,
+    Color? color,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(title, style: TextStyle(fontWeight: bold ? FontWeight.bold : null, fontSize: bold ? 15 : 13, color: bold ? Colors.black : Colors.grey[700])),
-          Text(value, style: TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.w600, fontSize: bold ? 17 : 13, color: color ?? (bold ? Colors.blue.shade800 : Colors.black87))),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.bold : null,
+              fontSize: bold ? 15 : 13,
+              color: bold ? Colors.black : Colors.grey[700],
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: bold ? FontWeight.bold : FontWeight.w600,
+              fontSize: bold ? 17 : 13,
+              color: color ?? (bold ? Colors.blue.shade800 : Colors.black87),
+            ),
+          ),
         ],
       ),
     );
@@ -479,5 +750,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 }
 
 extension CapExtension on String {
-  String capitalize() => isNotEmpty ? "${this[0].toUpperCase()}${substring(1)}" : "";
+  String capitalize() =>
+      isNotEmpty ? "${this[0].toUpperCase()}${substring(1)}" : "";
 }

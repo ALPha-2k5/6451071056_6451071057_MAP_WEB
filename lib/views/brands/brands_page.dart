@@ -7,12 +7,9 @@ class BrandsPage extends StatelessWidget {
   const BrandsPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => BrandController()..loadBrands(),
-      child: const Scaffold(
-        backgroundColor: Color(0xFFF8F9FD), // Nền xám nhạt hiện đại
-        body: _BrandsView(),
-      ),
+    return const Scaffold(
+      backgroundColor: Color(0xFFF8F9FD),
+      body: _BrandsView(),
     );
   }
 }
@@ -573,12 +570,12 @@ class _BrandsView extends StatelessWidget {
                     createdAt: brand?.createdAt ?? DateTime.now(),
                     updatedAt: DateTime.now(),
                   );
-                  if (brand == null)
+                  if (brand == null) {
                     await controller.add(newBrand);
-                  else
+                  } else {
                     await controller.update(newBrand);
-                  if (brand != null) await controller.saveRelations(brand.id);
-                  Navigator.pop(context);
+                  }
+                  if (context.mounted) Navigator.pop(context);
                 },
                 child: const Text(
                   "SAVE BRAND",

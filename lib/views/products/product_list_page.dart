@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/product_controller.dart';
 import '../../data/services/product_service.dart';
+import 'package:intl/intl.dart';
 import 'product_form_page.dart';
 
 class ProductListPage extends StatelessWidget {
   const ProductListPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ProductController(),
-      child: const Scaffold(
-        backgroundColor: Color(0xFFF5F7FA),
-        body: _ProductListView(),
-      ),
+    return const Scaffold(
+      backgroundColor: Color(0xFFF5F7FA),
+      body: _ProductListView(),
     );
   }
 }
@@ -169,7 +167,7 @@ class _ProductListView extends StatelessWidget {
                                         ),
                                         DataCell(
                                           Text(
-                                            "\$${item.price}",
+                                            "${NumberFormat("#,###").format(item.price)} đ",
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               color: Colors.green,

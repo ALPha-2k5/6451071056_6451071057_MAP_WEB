@@ -39,15 +39,19 @@ class _SidebarState extends State<Sidebar> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Colors.green,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.bolt, color: Colors.white, size: 24),
+                  child: const Icon(
+                    Icons.eco_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 const Flexible(
                   child: Text(
-                    "SHOE ADMIN",
+                    "FRUIT STORE",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -142,12 +146,12 @@ class _SidebarState extends State<Sidebar> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: isActive
-                ? Colors.blueAccent.withOpacity(0.15)
+                ? Colors.greenAccent.withOpacity(0.15)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: isActive
                 ? const Border(
-                    left: BorderSide(color: Colors.blueAccent, width: 4),
+                    left: BorderSide(color: Colors.greenAccent, width: 4),
                   )
                 : null,
           ),
@@ -155,11 +159,10 @@ class _SidebarState extends State<Sidebar> {
             children: [
               Icon(
                 icon,
-                color: isActive ? Colors.blueAccent : Colors.white60,
+                color: isActive ? Colors.greenAccent : Colors.white60,
                 size: 22,
               ),
               const SizedBox(width: 15),
-              // FIX LỖI OVERFLOW Ở ĐÂY: Dùng Expanded để Text không đẩyRow ra ngoài
               Expanded(
                 child: Text(
                   title,
@@ -169,7 +172,7 @@ class _SidebarState extends State<Sidebar> {
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                   ),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis, // Hiện dấu ... nếu quá dài
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (isActive) ...[
@@ -178,7 +181,7 @@ class _SidebarState extends State<Sidebar> {
                   width: 6,
                   height: 6,
                   decoration: const BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Colors.greenAccent,
                     shape: BoxShape.circle,
                   ),
                 ),
