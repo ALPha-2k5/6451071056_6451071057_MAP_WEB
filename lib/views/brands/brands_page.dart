@@ -217,10 +217,17 @@ class _BrandsView extends StatelessWidget {
                                             : null,
                                       ),
                                       const SizedBox(width: 12),
-                                      Text(
-                                        b.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
+                                      Expanded(
+                                        child: Tooltip(
+                                          message: b.name,
+                                          child: Text(
+                                            b.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],
