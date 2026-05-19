@@ -47,6 +47,20 @@ required this.shippingAddress,
 this.shippingDate,
 this.customerName = '',
 });
+static DateTime _parseDate(dynamic date) {
+if (date == null) return DateTime.now();
+if (date is Timestamp) return date.toDate();
+if (date is DateTime) return date;
+if (date is String) return DateTime.tryParse(date) ?? DateTime.now();
+return DateTime.now();
+}
+static DateTime? _parseNullableDate(dynamic date) {
+if (date == null) return null;
+if (date is Timestamp) return date.toDate();
+if (date is DateTime) return date;
+if (date is String) return DateTime.tryParse(date);
+return null;
+}
 factory OrderModel.fromFirestore(DocumentSnapshot doc) {
 final data = doc.data() as Map<String, dynamic>;
 return OrderModel(
@@ -66,10 +80,10 @@ orderStatus: data['orderStatus'] ?? '',
 paymentMethod: data['paymentMethod'] ?? '',
 paymentMethodType: data['paymentMethodType'] ?? '',
 itemCount: data['itemCount'] ?? 0,
-orderDate: (data['orderDate'] as Timestamp).toDate(),
-createdAt: (data['createdAt'] as Timestamp).toDate(),
-updatedAt: (data['updatedAt'] as Timestamp).toDate(),
-shippingDate: (data['shippingDate'] as Timestamp?)?.toDate(),
+orderDate: _parseDate(data['orderDate']),
+createdAt: _parseDate(data['createdAt']),
+updatedAt: _parseDate(data['updatedAt']),
+shippingDate: _parseNullableDate(data['shippingDate']),
 shippingAddress: data['shippingAddress'] ?? {},
 );
 }

@@ -6,6 +6,19 @@ import '../data/models/category_model.dart';
 
 class BrandController extends ChangeNotifier {
   final BrandService _service = BrandService();
+  bool _isDisposed = false;
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (_isDisposed) return;
+    super.notifyListeners();
+  }
+
   List<BrandModel> brands = [];
   List<BrandModel> filtered = [];
   bool isLoading = false;
@@ -55,12 +68,13 @@ class BrandController extends ChangeNotifier {
 
   Future<void> update(BrandModel brand) async {
     await _service.updateBrand(brand);
-    await fetchBrands();
+    await _service.saveBrandCategories(brand.id, selectedCategoryIds);
+    await loadBrands();
   }
 
   Future<void> delete(String id) async {
     await _service.deleteBrand(id);
-    await fetchBrands();
+    await loadBrands();
   }
 
   List<String> selectedCategoryIds = [];
@@ -71,6 +85,7 @@ class BrandController extends ChangeNotifier {
 
   Future<void> saveRelations(String brandId) async {
     await _service.saveBrandCategories(brandId, selectedCategoryIds);
+    await loadBrands();
   }
 
   final CategoryService _categoryService = CategoryService();

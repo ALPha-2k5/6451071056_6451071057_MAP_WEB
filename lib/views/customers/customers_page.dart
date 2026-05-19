@@ -60,7 +60,10 @@ class _CustomersView extends StatelessWidget {
               decoration: const InputDecoration(
                 hintText: "Search by name, email or phone...",
                 hintStyle: TextStyle(color: Color(0xFFA3AED0), fontSize: 14),
-                prefixIcon: Icon(Icons.search_rounded, color: Color(0xFF4318FF)),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: Color(0xFF4318FF),
+                ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.symmetric(vertical: 15),
               ),
@@ -108,61 +111,109 @@ class _CustomersView extends StatelessWidget {
                                     DataColumn(label: _TableLabel("EMAIL")),
                                     DataColumn(label: _TableLabel("PHONE")),
                                     DataColumn(label: _TableLabel("ORDERS")),
-                                    DataColumn(label: _TableLabel("REGISTER DATE")),
+                                    DataColumn(
+                                      label: _TableLabel("REGISTER DATE"),
+                                    ),
                                     DataColumn(label: _TableLabel("ACTION")),
                                   ],
-                                  rows: controller.paginatedData
-                                      .asMap()
-                                      .entries
-                                      .map((entry) {
+                                  rows: controller.paginatedData.asMap().entries.map((
+                                    entry,
+                                  ) {
                                     final index = entry.key;
                                     final c = entry.value;
-                                    final seq = (controller.currentPage - 1) *
+                                    final seq =
+                                        (controller.currentPage - 1) *
                                             controller.rowsPerPage +
                                         index +
                                         1;
                                     return DataRow(
                                       cells: [
-                                        DataCell(Text("$seq", style: const TextStyle(color: Color(0xFFA3AED0)))),
+                                        DataCell(
+                                          Text(
+                                            "$seq",
+                                            style: const TextStyle(
+                                              color: Color(0xFFA3AED0),
+                                            ),
+                                          ),
+                                        ),
                                         DataCell(
                                           Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
                                               CircleAvatar(
                                                 radius: 16,
-                                                backgroundColor: const Color(0xFF4318FF).withOpacity(0.1),
+                                                backgroundColor: const Color(
+                                                  0xFF4318FF,
+                                                ).withOpacity(0.1),
                                                 child: Text(
-                                                  c.firstName.isNotEmpty ? c.firstName[0].toUpperCase() : "?",
-                                                  style: const TextStyle(color: Color(0xFF4318FF), fontSize: 12, fontWeight: FontWeight.bold),
+                                                  c.firstName.isNotEmpty
+                                                      ? c.firstName[0]
+                                                            .toUpperCase()
+                                                      : "?",
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF4318FF),
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
                                               const SizedBox(width: 12),
                                               Text(
                                                 "${c.firstName} ${c.lastName}",
-                                                style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2B3674)),
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Color(0xFF2B3674),
+                                                ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                        DataCell(Text(c.email, style: const TextStyle(color: Color(0xFF1B2559)))),
-                                        DataCell(Text(c.phone, style: const TextStyle(color: Color(0xFF1B2559)))),
                                         DataCell(
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.orange.withOpacity(0.1),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            child: Text(
-                                              "${controller.orderCountMap[c.id] ?? 0}",
-                                              style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                                          Text(
+                                            c.email,
+                                            style: const TextStyle(
+                                              color: Color(0xFF1B2559),
                                             ),
                                           ),
                                         ),
                                         DataCell(
                                           Text(
-                                            c.createdAt != null ? "${c.createdAt!.day}/${c.createdAt!.month}/${c.createdAt!.year}" : "-",
-                                            style: const TextStyle(color: Color(0xFFA3AED0)),
+                                            c.phone,
+                                            style: const TextStyle(
+                                              color: Color(0xFF1B2559),
+                                            ),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.orange.withOpacity(
+                                                0.1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              "${controller.orderCountMap[c.id] ?? 0}",
+                                              style: const TextStyle(
+                                                color: Colors.orange,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            c.createdAt != null
+                                                ? "${c.createdAt!.day}/${c.createdAt!.month}/${c.createdAt!.year}"
+                                                : "-",
+                                            style: const TextStyle(
+                                              color: Color(0xFFA3AED0),
+                                            ),
                                           ),
                                         ),
                                         DataCell(
@@ -175,15 +226,24 @@ class _CustomersView extends StatelessWidget {
                                                 onPressed: () {
                                                   Navigator.push(
                                                     context,
-                                                    MaterialPageRoute(builder: (_) => CustomerDetailPage(customer: c)),
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          CustomerDetailPage(
+                                                            customer: c,
+                                                          ),
+                                                    ),
                                                   );
                                                 },
                                               ),
                                               const SizedBox(width: 8),
                                               _CircularActionButton(
-                                                icon: Icons.delete_outline_rounded,
+                                                icon: Icons
+                                                    .delete_outline_rounded,
                                                 color: Colors.red,
-                                                onPressed: () => _confirmDelete(context, c.id),
+                                                onPressed: () => _confirmDelete(
+                                                  context,
+                                                  c.id,
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -230,13 +290,17 @@ class _CustomersView extends StatelessWidget {
                             ]
                           : [],
                       border: Border.all(
-                        color: isCurrent ? const Color(0xFF4318FF) : const Color(0xFFE0E5F2),
+                        color: isCurrent
+                            ? const Color(0xFF4318FF)
+                            : const Color(0xFFE0E5F2),
                       ),
                     ),
                     child: Text(
                       "$page",
                       style: TextStyle(
-                        color: isCurrent ? Colors.white : const Color(0xFF2B3674),
+                        color: isCurrent
+                            ? Colors.white
+                            : const Color(0xFF2B3674),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -257,7 +321,9 @@ class _CustomersView extends StatelessWidget {
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Delete Customer?"),
-        content: const Text("This action cannot be undone. Are you sure you want to remove this customer?"),
+        content: const Text(
+          "This action cannot be undone. Are you sure you want to remove this customer?",
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -266,7 +332,9 @@ class _CustomersView extends StatelessWidget {
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             onPressed: () async {
               await controller.delete(id);

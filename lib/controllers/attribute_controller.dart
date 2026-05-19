@@ -10,8 +10,10 @@ class AttributeController extends ChangeNotifier {
 
   /// SET DATA từ stream
   void setData(List<AttributeModel> data) {
-    _allData = data;
-    _applyFilter();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _allData = data;
+      _applyFilter();
+    });
   }
 
   /// SEARCH

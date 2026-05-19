@@ -46,4 +46,14 @@ class AttributeModel {
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AttributeModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
 }

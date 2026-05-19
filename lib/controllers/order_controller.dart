@@ -10,8 +10,12 @@ class OrderController {
   /// Lấy danh sách đơn hàng và map tên khách hàng từ bảng users
   Future<void> fetchOrders() async {
     orders = await _service.getAllOrders();
+    final Map<String, Map<String, dynamic>?> userCache = {};
     for (var order in orders) {
-      final user = await _service.getUserById(order.userId);
+      if (!userCache.containsKey(order.userId)) {
+        userCache[order.userId] = await _service.getUserById(order.userId);
+      }
+      final user = userCache[order.userId];
       if (user != null) {
         final firstName = user['firstName'] ?? '';
         final lastName = user['lastName'] ?? '';
@@ -55,6 +59,12 @@ class OrderController {
       await _service.handleOrderRevertStock(order);
     }
 
+    // Ràng buộc: Nếu muốn chuyển sang Đã giao (delivered) thì phải thanh toán (paid)
+    if (lowerNewStatus == 'delivered' &&
+        order.paymentStatus.toLowerCase() != 'paid') {
+      throw Exception('Không thể chuyển trạng thái sang "Đã giao" khi đơn hàng chưa được thanh toán.');
+    }
+
     // 1. Cập nhật trạng thái trong database
     await _service.updateOrderStatus(order.docId, newStatus);
 
@@ -63,7 +73,8 @@ class OrderController {
       'userId': order.userId,
       'orderId': order.id,
       'orderStatus': newStatus,
-      'message': 'Đơn hàng ${order.id} của bạn đã chuyển sang trạng thái $newStatus',
+      'message':
+          'Đơn hàng ${order.id} của bạn đã chuyển sang trạng thái $newStatus',
       'isRead': false,
       'createdAt': FieldValue.serverTimestamp(),
     });

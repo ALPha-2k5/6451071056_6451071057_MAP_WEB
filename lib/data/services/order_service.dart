@@ -73,5 +73,3 @@ class OrderService {
     await batch.commit();
   }
 }
-
-

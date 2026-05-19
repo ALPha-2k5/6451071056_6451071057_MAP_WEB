@@ -9,6 +9,7 @@ import 'firebase_options.dart';
 import 'controllers/auth_controller.dart';
 import 'controllers/category_controller.dart';
 import 'controllers/attribute_controller.dart';
+import 'controllers/coupon_controller.dart';
 import 'routes/app_routes.dart';
 
 void main() async {
@@ -24,10 +25,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()..checkLogin()),
-        ChangeNotifierProvider(create: (_) => CategoryController()),
+        ChangeNotifierProvider(create: (_) => CategoryController()..fetchCategories()),
         ChangeNotifierProvider(create: (_) => ProductController()),
         ChangeNotifierProvider(create: (_) => AttributeController()),
-        ChangeNotifierProvider(create: (_) => BrandController()),
+        ChangeNotifierProvider(create: (_) => BrandController()..loadBrands()),
+        ChangeNotifierProvider(create: (_) => CouponController()..fetchCoupons()),
       ],
       child: Builder(
         builder: (context) {
