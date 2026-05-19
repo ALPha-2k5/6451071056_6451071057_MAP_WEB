@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: usernameController,
                       decoration: InputDecoration(
                         labelText: "Tên đăng nhập",
-                        hintText: "Nhập tài khoản (admin)",
+                        hintText: "Nhập tài khoản",
                         prefixIcon: const Icon(Icons.person_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15),
@@ -109,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: !isPasswordVisible,
                       decoration: InputDecoration(
                         labelText: "Mật khẩu",
-                        hintText: "Nhập mật khẩu (123@456)",
+                        hintText: "Nhập mật khẩu",
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(

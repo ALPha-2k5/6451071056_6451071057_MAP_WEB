@@ -150,7 +150,7 @@ class AttributesPage extends StatelessWidget {
                                   ),
                                   DataColumn(
                                     label: Text(
-                                      "STATUS",
+                                      "TRẠNG THÁI",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.indigo,
@@ -326,7 +326,7 @@ class AttributesPage extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            isActive ? "Active" : "Disabled",
+            isActive ? "Đang hoạt động" : "Vô hiệu",
             style: TextStyle(
               color: isActive ? Colors.green[800] : Colors.red[800],
               fontWeight: FontWeight.bold,

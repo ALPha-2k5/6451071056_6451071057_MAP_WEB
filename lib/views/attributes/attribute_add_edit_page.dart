@@ -37,7 +37,7 @@ class _AttributeFormPageState extends State<AttributeFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.attribute == null ? "Create Attribute" : "Update Attribute",
+          widget.attribute == null ? "Tạo thuộc tính" : "Cập nhật thuộc tính",
         ),
       ),
       body: Padding(
@@ -48,19 +48,19 @@ class _AttributeFormPageState extends State<AttributeFormPage> {
             children: [
               TextFormField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: "Name"),
+                decoration: const InputDecoration(labelText: "Tên"),
               ),
               TextFormField(
                 controller: valueController,
                 decoration: const InputDecoration(
-                  labelText: "Values (small|medium|big)",
+                  labelText: "Giá trị (nhỏ|vừa|lớn)",
                 ),
               ),
               Row(
                 children: [
                   Expanded(
                     child: CheckboxListTile(
-                      title: const Text("Active"),
+                      title: const Text("Kích hoạt"),
                       value: isActive,
                       onChanged: (v) => setState(() => isActive = v!),
                       controlAffinity: ListTileControlAffinity.leading,
@@ -72,7 +72,7 @@ class _AttributeFormPageState extends State<AttributeFormPage> {
                 children: [
                   Expanded(
                     child: CheckboxListTile(
-                      title: const Text("Searchable"),
+                      title: const Text("Cho phép tìm kiếm"),
                       value: isSearchable,
                       onChanged: (v) => setState(() => isSearchable = v!),
                       controlAffinity: ListTileControlAffinity.leading,
@@ -80,8 +80,7 @@ class _AttributeFormPageState extends State<AttributeFormPage> {
                   ),
                   const SizedBox(width: 8),
                   Tooltip(
-                    message:
-                        "Allow user to filter product based on this attribute",
+                    message: "Cho phép lọc sản phẩm theo thuộc tính này",
                     child: const Icon(
                       Icons.info_outline,
                       size: 20,
@@ -109,7 +108,7 @@ class _AttributeFormPageState extends State<AttributeFormPage> {
                   }
                   Navigator.pop(context);
                 },
-                child: const Text("Save"),
+                child: const Text("Lưu"),
               ),
             ],
           ),

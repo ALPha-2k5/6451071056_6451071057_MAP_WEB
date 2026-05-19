@@ -59,6 +59,12 @@ class OrderController {
       await _service.handleOrderRevertStock(order);
     }
 
+    // Ràng buộc: Nếu muốn chuyển sang Đã giao (delivered) thì phải thanh toán (paid)
+    if (lowerNewStatus == 'delivered' &&
+        order.paymentStatus.toLowerCase() != 'paid') {
+      throw Exception('Không thể chuyển trạng thái sang "Đã giao" khi đơn hàng chưa được thanh toán.');
+    }
+
     // 1. Cập nhật trạng thái trong database
     await _service.updateOrderStatus(order.docId, newStatus);
 

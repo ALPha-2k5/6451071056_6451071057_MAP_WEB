@@ -16,33 +16,60 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   final OrderController controller = OrderController();
   String selectedStatus = "";
   Map<String, dynamic>? customerData;
+  late OrderModel _order;
 
-  final List<String> statuses = [
-    "Created",
-    "Pending",
-    "Processing",
-    "Shipped",
-    "Delivered",
-    "Cancelled",
-    "Returned",
-    "Refunded",
+  static const List<Map<String, String>> statuses = [
+    {"value": "created", "label": "Đã tạo"},
+    {"value": "pending", "label": "Chờ xử lý"},
+    {"value": "processing", "label": "Đang xử lý"},
+    {"value": "shipped", "label": "Đang giao"},
+    {"value": "delivered", "label": "Đã giao"},
+    {"value": "canceled", "label": "Đã hủy"},
+    {"value": "returned", "label": "Đã trả hàng"},
+    {"value": "refunded", "label": "Hoàn tiền"},
   ];
 
   @override
   void initState() {
     super.initState();
-    selectedStatus = widget.order.orderStatus.capitalize();
+    _order = widget.order;
+    selectedStatus = widget.order.orderStatus.isNotEmpty
+      ? widget.order.orderStatus.toLowerCase()
+      : statuses.first['value']!;
     fetchCustomer();
   }
 
-  Future<void> fetchCustomer() async {
+  Future<void> _reloadOrder() async {
+    if (_order.docId.isEmpty) return;
     final doc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.order.userId)
+        .collection('orders')
+        .doc(_order.docId)
         .get();
-    if (mounted) {
+    if (!doc.exists) return;
+    if (!mounted) return;
+    final updated = OrderModel.fromFirestore(doc);
+    setState(() {
+      _order = updated;
+      if (updated.orderStatus.isNotEmpty) {
+        selectedStatus = updated.orderStatus.toLowerCase();
+      }
+    });
+  }
+
+  Future<void> fetchCustomer() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.order.userId)
+          .get();
+      if (!mounted) return;
       setState(() {
-        customerData = doc.data();
+        customerData = doc.data() ?? {};
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        customerData = {};
       });
     }
   }
@@ -69,7 +96,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   void _showTransactionDialog(OrderModel order) {
     final amountController = TextEditingController();
     DateTime? selectedDate;
-    String statusInDialog = order.paymentStatus;
+    String statusInDialog =
+        order.paymentStatus.isNotEmpty ? order.paymentStatus : "pending";
 
     showDialog(
       context: context,
@@ -87,7 +115,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                         .map(
                           (e) => DropdownMenuItem(
                             value: e,
-                            child: Text(e.toUpperCase()),
+                            child:
+                                Text(_paymentStatusLabel(e).toUpperCase()),
                           ),
                         )
                         .toList(),
@@ -141,6 +170,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                   shippingDate: selectedDate,
                   paymentStatus: statusInDialog,
                 );
+                await _reloadOrder();
                 if (context.mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -158,7 +188,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final order = widget.order;
+    final order = _order;
+    final customerDisplayName = _fullNameFromCustomer(
+      customerData,
+      fallback: order.customerName,
+    );
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
@@ -263,7 +297,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           const SizedBox(height: 16),
                           _infoRow(
                             "Trạng thái",
-                            order.paymentStatus.toUpperCase(),
+                            _paymentStatusLabel(order.paymentStatus)
+                                .toUpperCase(),
                             color: order.paymentStatus == "paid"
                                 ? Colors.green
                                 : Colors.orange,
@@ -311,8 +346,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                             items: statuses
                                 .map(
                                   (s) => DropdownMenuItem(
-                                    value: s,
-                                    child: Text(s),
+                                    value: s['value'],
+                                    child: Text(s['label'] ?? ""),
                                   ),
                                 )
                                 .toList(),
@@ -331,19 +366,35 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                 ),
                               ),
                               onPressed: () async {
-                                await controller.updateOrderStatus(
-                                  order,
-                                  selectedStatus,
-                                );
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        "Cập nhật trạng thái thành công",
-                                      ),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
+                                try {
+                                  await controller.updateOrderStatus(
+                                    order,
+                                    selectedStatus,
                                   );
+                                  await _reloadOrder();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Cập nhật trạng thái thành công",
+                                        ),
+                                        backgroundColor: Colors.green,
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          e.toString().replaceAll('Exception: ', ''),
+                                        ),
+                                        backgroundColor: Colors.red,
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
                                 }
                               },
                               child: const Text(
@@ -371,7 +422,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                   radius: 25,
                                   backgroundColor: Colors.blue.withOpacity(0.1),
                                   child: Text(
-                                    customerData!['firstName'][0],
+                                    _initialFromName(customerDisplayName),
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -384,14 +435,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        "${customerData!['firstName']} ${customerData!['lastName']}",
+                                        customerDisplayName,
                                         style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 16,
                                         ),
                                       ),
                                       Text(
-                                        customerData!['email'],
+                                        _stringField(
+                                          customerData?['email'],
+                                          fallback: "Chưa có email",
+                                        ),
                                         style: TextStyle(
                                           color: Colors.grey[600],
                                           fontSize: 13,
@@ -419,7 +473,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              "${order.shippingAddress['number']} ${order.shippingAddress['street']}, ${order.shippingAddress['ward']}, ${order.shippingAddress['city']}",
+                              _shippingAddressText(order.shippingAddress),
                               style: const TextStyle(height: 1.5, fontSize: 13),
                             ),
                           ),
@@ -444,7 +498,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           ),
                           _buildActivityItem(
                             title:
-                                "Trạng thái: ${order.orderStatus.toUpperCase()}",
+                                "Trạng thái: ${_orderStatusLabel(order.orderStatus).toUpperCase()}",
                             subtitle: "Cập nhật lần cuối bởi hệ thống",
                             time: DateFormat(
                               'dd/MM/yyyy HH:mm',
@@ -555,7 +609,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 ),
               ),
               Text(
-                "Trạng thái thanh toán: ${order.paymentStatus.toUpperCase()}",
+                "Trạng thái thanh toán: ${_paymentStatusLabel(order.paymentStatus).toUpperCase()}",
                 style: const TextStyle(color: Colors.white70),
               ),
             ],
@@ -645,6 +699,13 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
         ),
       ],
       rows: order.products.map<DataRow>((item) {
+        final itemMap = item is Map<String, dynamic>
+            ? item
+            : <String, dynamic>{};
+        final imageUrl = _stringField(itemMap['image']);
+        final title = _stringField(itemMap['title'], fallback: "Chưa rõ");
+        final price = _numField(itemMap['price']);
+        final quantity = _numField(itemMap['quantity']);
         return DataRow(
           cells: [
             DataCell(
@@ -652,17 +713,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(6),
-                    child: Image.network(
-                      item['image'],
-                      width: 35,
-                      height: 35,
-                      fit: BoxFit.cover,
-                    ),
+                    child: _productImage(imageUrl),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      item['title'],
+                      title,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 12),
                     ),
@@ -670,11 +726,11 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 ],
               ),
             ),
-            DataCell(Text("${_money(item['price'])} đ")),
-            DataCell(Text("x${item['quantity']}")),
+            DataCell(Text("${_money(price)} đ")),
+            DataCell(Text("x${quantity.toInt()}")),
             DataCell(
               Text(
-                "${_money(item['price'] * item['quantity'])} đ",
+                "${_money(price * quantity)} đ",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -747,6 +803,114 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
       ),
     );
   }
+}
+
+String _stringField(dynamic value, {String fallback = ""}) {
+  if (value == null) return fallback;
+  if (value is String) return value;
+  if (value is num || value is bool) return value.toString();
+  return fallback;
+}
+
+num _numField(dynamic value, {num fallback = 0}) {
+  if (value == null) return fallback;
+  if (value is num) return value;
+  if (value is String) return num.tryParse(value) ?? fallback;
+  return fallback;
+}
+
+String _initialFromName(String name) {
+  final trimmed = name.trim();
+  if (trimmed.isEmpty) return "?";
+  return trimmed[0].toUpperCase();
+}
+
+String _fullNameFromCustomer(
+  Map<String, dynamic>? customer, {
+  String fallback = "",
+}) {
+  final firstName = _stringField(customer?['firstName']);
+  final lastName = _stringField(customer?['lastName']);
+  final fullNameParts = "$firstName $lastName".trim();
+  final fullName = _stringField(customer?['fullName']);
+  final name = _stringField(customer?['name']);
+  final displayName = _stringField(customer?['displayName']);
+  final username = _stringField(customer?['username']);
+
+  final candidates = <String>[
+    fullNameParts,
+    fullName,
+    name,
+    displayName,
+    username,
+    fallback,
+  ].where((value) => value.trim().isNotEmpty);
+
+  return candidates.isNotEmpty ? candidates.first : "Khách hàng";
+}
+
+String _shippingAddressText(Map<String, dynamic> address) {
+  final parts = [
+    _stringField(address['number']),
+    _stringField(address['street']),
+    _stringField(address['ward']),
+    _stringField(address['city']),
+  ].where((part) => part.trim().isNotEmpty).toList();
+
+  if (parts.isEmpty) return "Chưa có thông tin";
+  return parts.join(", ");
+}
+
+String _orderStatusLabel(String status) {
+  final normalized = status.toLowerCase();
+  const labels = {
+    "created": "Đã tạo",
+    "pending": "Chờ xử lý",
+    "processing": "Đang xử lý",
+    "shipped": "Đang giao",
+    "delivered": "Đã giao",
+    "canceled": "Đã hủy",
+    "cancelled": "Đã hủy",
+    "returned": "Đã trả hàng",
+    "refunded": "Hoàn tiền",
+  };
+  return labels[normalized] ?? status;
+}
+
+String _paymentStatusLabel(String status) {
+  final normalized = status.toLowerCase();
+  const labels = {
+    "pending": "Chờ thanh toán",
+    "paid": "Đã thanh toán",
+    "failed": "Thất bại",
+  };
+  return labels[normalized] ?? status;
+}
+
+Widget _productImage(String imageUrl) {
+  if (imageUrl.isEmpty) {
+    return Container(
+      width: 35,
+      height: 35,
+      color: Colors.grey.shade200,
+      child: const Icon(Icons.image_not_supported, size: 18),
+    );
+  }
+
+  return Image.network(
+    imageUrl,
+    width: 35,
+    height: 35,
+    fit: BoxFit.cover,
+    errorBuilder: (context, error, stackTrace) {
+      return Container(
+        width: 35,
+        height: 35,
+        color: Colors.grey.shade200,
+        child: const Icon(Icons.broken_image, size: 18),
+      );
+    },
+  );
 }
 
 extension CapExtension on String {

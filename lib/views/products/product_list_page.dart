@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controllers/product_controller.dart';
 import '../../data/services/product_service.dart';
+import '../../data/models/product_model.dart';
 import 'package:intl/intl.dart';
 import 'product_form_page.dart';
 
@@ -29,7 +30,7 @@ class _ProductListView extends StatelessWidget {
         children: [
           // --- HEADER ---
           const Text(
-            "Product Inventory",
+            "Kho sản phẩm",
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -54,7 +55,7 @@ class _ProductListView extends StatelessWidget {
                   ),
                   child: TextField(
                     decoration: const InputDecoration(
-                      hintText: "Search products...",
+                      hintText: "Tìm sản phẩm...",
                       prefixIcon: Icon(Icons.search, color: Colors.blueAccent),
                       border: InputBorder.none,
                     ),
@@ -69,7 +70,7 @@ class _ProductListView extends StatelessWidget {
                   MaterialPageRoute(builder: (_) => const ProductFormPage()),
                 ),
                 icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text("ADD PRODUCT"),
+                label: const Text("THÊM SẢN PHẨM"),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   foregroundColor: Colors.white,
@@ -95,8 +96,8 @@ class _ProductListView extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: controller.filteredProducts.isEmpty
-                    ? const Center(child: Text("No products found"))
+                  child: controller.filteredProducts.isEmpty
+                    ? const Center(child: Text("Không có sản phẩm"))
                     : Scrollbar(
                         thumbVisibility: true, // Luôn hiện thanh cuộn ngang
                         thickness: 8,
@@ -115,26 +116,31 @@ class _ProductListView extends StatelessWidget {
                                 columnSpacing:
                                     20, // Thu hẹp khoảng cách giữa các cột
                                 columns: const [
-                                  DataColumn(label: Text("SEQ")),
-                                  DataColumn(label: Text("PRODUCT")),
-                                  DataColumn(label: Text("PRICE")),
-                                  DataColumn(label: Text("TYPE")),
-                                  DataColumn(label: Text("STOCK")),
-                                  DataColumn(
-                                    label: Text("CÒN HÀNG"),
-                                  ), // 👈 THÊM
-                                  DataColumn(label: Text("VISIBLE")),
-                                  DataColumn(label: Text("STATUS")),
-                                  DataColumn(label: Text("ACTION")),
+                                  DataColumn(label: Text("STT")),
+                                  DataColumn(label: Text("SẢN PHẨM")),
+                                  DataColumn(label: Text("GIÁ")),
+                                  DataColumn(label: Text("LOẠI")),
+                                  DataColumn(label: Text("TỒN KHO")),
+                                  DataColumn(label: Text("CÒN HÀNG")),
+                                  DataColumn(label: Text("HIỂN THỊ")),
+                                  DataColumn(label: Text("TRẠNG THÁI")),
+                                  DataColumn(label: Text("THAO TÁC")),
                                 ],
                                 rows: List.generate(
                                   controller.paginatedData.length,
                                   (index) {
                                     final item =
                                         controller.paginatedData[index];
+                                    final rowNumber =
+                                        controller.rowsPerPage <= 0
+                                            ? index + 1
+                                            : (controller.currentPage *
+                                                    controller.rowsPerPage) +
+                                                index +
+                                                1;
                                     return DataRow(
                                       cells: [
-                                        DataCell(Text("${index + 1}")),
+                                        DataCell(Text("$rowNumber")),
                                         DataCell(
                                           Row(
                                             children: [
@@ -174,35 +180,47 @@ class _ProductListView extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                        DataCell(Text(item.productType.name)),
+                                        DataCell(
+                                          Text(_productTypeLabel(
+                                            item.productType,
+                                          )),
+                                        ),
                                         DataCell(_buildStockBadge(item.stock)),
                                         DataCell(
-                                          Icon(
-                                            (item.stock - item.soldQuantity) > 0
-                                                ? Icons.check_circle
-                                                : Icons.cancel,
-                                            color:
-                                                (item.stock -
-                                                        item.soldQuantity) >
-                                                    0
-                                                ? Colors.green
-                                                : Colors.red,
-                                            size: 20,
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                (item.stock - item.soldQuantity) > 0
+                                                    ? Icons.check_circle
+                                                    : Icons.cancel,
+                                                color: (item.stock - item.soldQuantity) > 0
+                                                    ? Colors.green
+                                                    : Colors.red,
+                                                size: 18,
+                                              ),
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                "${item.stock - item.soldQuantity}",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: (item.stock - item.soldQuantity) > 0
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                ),
+                                              ),
+                                              if (item.soldQuantity > 0)
+                                                Text(
+                                                  " (Đã bán ${item.soldQuantity})",
+                                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                                ),
+                                            ],
                                           ),
                                         ),
                                         DataCell(
                                           _buildVisibilityBadge(item.isDraft),
                                         ),
                                         DataCell(
-                                          Icon(
-                                            item.isActive
-                                                ? Icons.check_circle
-                                                : Icons.cancel,
-                                            color: item.isActive
-                                                ? Colors.green
-                                                : Colors.red,
-                                            size: 20,
-                                          ),
+                                          _buildActiveBadge(item.isActive),
                                         ),
                                         DataCell(
                                           Row(
@@ -252,23 +270,51 @@ class _ProductListView extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           // --- PAGINATION ---
-          Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: controller.previousPage,
-                ),
-                Text(
-                  "Page ${controller.currentPage + 1} of ${controller.totalPages}",
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: controller.nextPage,
-                ),
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Text("Hiển thị:"),
+                  const SizedBox(width: 10),
+                  DropdownButton<int>(
+                    value: controller.rowsPerPage,
+                    items: const [10, 20, 50, 100, 0]
+                        .map(
+                          (value) => DropdownMenuItem(
+                            value: value,
+                            child: Text(value == 0 ? "Tất cả" : "$value"),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (value) {
+                      if (value == null) return;
+                      controller.setRowsPerPage(value);
+                    },
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: controller.rowsPerPage <= 0
+                        ? null
+                        : controller.previousPage,
+                  ),
+                  Text(
+                    "Trang ${controller.currentPage + 1} / ${controller.totalPages}",
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: controller.rowsPerPage <= 0
+                        ? null
+                        : controller.nextPage,
+                  ),
+                ],
+              ),
+            ],
           ),
         ],
       ),
@@ -285,7 +331,7 @@ class _ProductListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        "$stock In Stock",
+        "Tồn $stock",
         style: TextStyle(
           color: stock > 0 ? Colors.green : Colors.red,
           fontSize: 12,
@@ -304,7 +350,7 @@ class _ProductListView extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        isDraft ? "Draft" : "Published",
+        isDraft ? "Bản nháp" : "Đã đăng",
         style: TextStyle(
           color: isDraft ? Colors.orange : Colors.blue,
           fontSize: 12,
@@ -312,18 +358,46 @@ class _ProductListView extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildActiveBadge(bool isActive) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isActive
+            ? Colors.green.withOpacity(0.1)
+            : Colors.red.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        isActive ? "Hoạt động" : "Tạm dừng",
+        style: TextStyle(
+          color: isActive ? Colors.green : Colors.red,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  String _productTypeLabel(ProductType type) {
+    switch (type) {
+      case ProductType.simple:
+        return "Đơn";
+      case ProductType.variable:
+        return "Biến thể";
+    }
+  }
 }
 
 Future<void> _showDeleteDialog(BuildContext context, VoidCallback onConfirm) {
   return showDialog(
     context: context,
     builder: (_) => AlertDialog(
-      title: const Text("Confirm Delete"),
-      content: const Text("Are you sure?"),
+      title: const Text("Xác nhận xóa"),
+      content: const Text("Bạn chắc chắn muốn xóa?"),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
+          child: const Text("Hủy"),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -331,7 +405,7 @@ Future<void> _showDeleteDialog(BuildContext context, VoidCallback onConfirm) {
             onConfirm();
             Navigator.pop(context);
           },
-          child: const Text("Delete", style: TextStyle(color: Colors.white)),
+          child: const Text("Xóa", style: TextStyle(color: Colors.white)),
         ),
       ],
     ),

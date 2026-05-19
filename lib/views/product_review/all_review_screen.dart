@@ -30,7 +30,7 @@ class AllReviewScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Customer Reviews",
+                            "Đánh giá khách hàng",
                             style: TextStyle(
                               fontSize: 32,
                               fontWeight: FontWeight.bold,
@@ -39,7 +39,7 @@ class AllReviewScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            "Manage and moderate your product feedback",
+                            "Quản lý và duyệt phản hồi sản phẩm",
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade600,
@@ -58,7 +58,7 @@ class AllReviewScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          "Total: ${controller.filteredReviews.length}",
+                          "Tổng: ${controller.filteredReviews.length}",
                           style: const TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,
@@ -91,7 +91,8 @@ class AllReviewScreen extends StatelessWidget {
                           child: TextField(
                             onChanged: controller.search,
                             decoration: InputDecoration(
-                              hintText: "Search by product, user or content...",
+                              hintText:
+                                  "Tìm theo sản phẩm, khách hàng hoặc nội dung...",
                               prefixIcon: const Icon(
                                 Icons.search,
                                 color: Colors.blue,
@@ -129,15 +130,15 @@ class AllReviewScreen extends StatelessWidget {
                                 items: const [
                                   DropdownMenuItem(
                                     value: "all",
-                                    child: Text("All Status"),
+                                    child: Text("Tất cả trạng thái"),
                                   ),
                                   DropdownMenuItem(
                                     value: "pending",
-                                    child: Text("Pending"),
+                                    child: Text("Chờ duyệt"),
                                   ),
                                   DropdownMenuItem(
                                     value: "approved",
-                                    child: Text("Approved"),
+                                    child: Text("Đã duyệt"),
                                   ),
                                 ],
                                 onChanged: (String? value) {
@@ -216,7 +217,7 @@ class AllReviewScreen extends StatelessWidget {
         Icon(Icons.feedback_outlined, size: 80, color: Colors.grey.shade300),
         const SizedBox(height: 16),
         Text(
-          "No reviews found",
+          "Không có đánh giá",
           style: TextStyle(
             fontSize: 18,
             color: Colors.grey.shade500,
@@ -234,14 +235,14 @@ class AllReviewScreen extends StatelessWidget {
       color: Color(0xFF444444),
     );
     return const [
-      DataColumn(label: Text("SEQ", style: headerStyle)),
-      DataColumn(label: Text("PRODUCT", style: headerStyle)),
-      DataColumn(label: Text("REVIEW CONTENT", style: headerStyle)),
-      DataColumn(label: Text("RATING", style: headerStyle)),
-      DataColumn(label: Text("USER", style: headerStyle)),
-      DataColumn(label: Text("STATUS", style: headerStyle)),
-      DataColumn(label: Text("DATE", style: headerStyle)),
-      DataColumn(label: Text("ACTIONS", style: headerStyle)),
+      DataColumn(label: Text("STT", style: headerStyle)),
+      DataColumn(label: Text("SẢN PHẨM", style: headerStyle)),
+      DataColumn(label: Text("NỘI DUNG", style: headerStyle)),
+      DataColumn(label: Text("ĐIỂM", style: headerStyle)),
+      DataColumn(label: Text("KHÁCH HÀNG", style: headerStyle)),
+      DataColumn(label: Text("TRẠNG THÁI", style: headerStyle)),
+      DataColumn(label: Text("NGÀY", style: headerStyle)),
+      DataColumn(label: Text("THAO TÁC", style: headerStyle)),
     ];
   }
 
@@ -347,7 +348,7 @@ class AllReviewScreen extends StatelessWidget {
             future: controller.getCustomerName(review.userId),
             builder: (context, snapshot) {
               return Text(
-                snapshot.data ?? "Loading...",
+                snapshot.data ?? "Đang tải...",
                 style: const TextStyle(
                   color: Colors.blueGrey,
                   fontWeight: FontWeight.w500,
@@ -367,7 +368,7 @@ class AllReviewScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              review.isApproved ? "Approved" : "Pending",
+              review.isApproved ? "Đã duyệt" : "Chờ duyệt",
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -393,14 +394,14 @@ class AllReviewScreen extends StatelessWidget {
                 _buildActionButton(
                   icon: Icons.check_circle_outline,
                   color: Colors.green,
-                  tooltip: "Approve Review",
+                  tooltip: "Duyệt đánh giá",
                   onTap: () => controller.approve(review),
                 ),
               const SizedBox(width: 8),
               _buildActionButton(
                 icon: Icons.delete_outline,
                 color: Colors.redAccent,
-                tooltip: "Delete Review",
+                tooltip: "Xóa đánh giá",
                 onTap: () =>
                     _showDeleteDialog(context, controller, review.id),
               ),
@@ -449,16 +450,16 @@ class AllReviewScreen extends StatelessWidget {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.red),
             SizedBox(width: 10),
-            Text("Confirm Delete"),
+            Text("Xác nhận xóa"),
           ],
         ),
         content: const Text(
-          "This action cannot be undone. Do you want to remove this review permanently?",
+          "Hành động này không thể hoàn tác. Bạn có muốn xóa đánh giá vĩnh viễn không?",
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+            child: const Text("Hủy", style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -469,7 +470,7 @@ class AllReviewScreen extends StatelessWidget {
               ),
             ),
             child: const Text(
-              "Delete Now",
+              "Xóa ngay",
               style: TextStyle(color: Colors.white),
             ),
           ),

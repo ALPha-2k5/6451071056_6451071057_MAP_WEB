@@ -78,7 +78,7 @@ class _OrderPageState extends State<OrderPage> {
                 children: [
                   /// HEADER
                   const Text(
-                    "Order Management",
+                    "Quản lý đơn hàng",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -125,15 +125,15 @@ class _OrderPageState extends State<OrderPage> {
                               headingRowHeight: 60,
                               columnSpacing: 35,
                               columns: const [
-                                DataColumn(label: _HeaderLabel("Seq")),
-                                DataColumn(label: _HeaderLabel("Order ID")),
-                                DataColumn(label: _HeaderLabel("Customer")),
-                                DataColumn(label: _HeaderLabel("Item")),
-                                DataColumn(label: _HeaderLabel("Order Status")),
-                                DataColumn(label: _HeaderLabel("Payment")),
-                                DataColumn(label: _HeaderLabel("Amount")),
-                                DataColumn(label: _HeaderLabel("Date")),
-                                DataColumn(label: _HeaderLabel("Action")),
+                                DataColumn(label: _HeaderLabel("STT")),
+                                DataColumn(label: _HeaderLabel("Mã đơn")),
+                                DataColumn(label: _HeaderLabel("Khách hàng")),
+                                DataColumn(label: _HeaderLabel("Số SP")),
+                                DataColumn(label: _HeaderLabel("Trạng thái")),
+                                DataColumn(label: _HeaderLabel("Thanh toán")),
+                                DataColumn(label: _HeaderLabel("Tổng tiền")),
+                                DataColumn(label: _HeaderLabel("Ngày")),
+                                DataColumn(label: _HeaderLabel("Thao tác")),
                               ],
                               rows: controller.filteredOrders
                                   .asMap()
@@ -187,13 +187,13 @@ class _OrderPageState extends State<OrderPage> {
         DataCell(Text("${order.itemCount} sp")),
         DataCell(
           _buildBadge(
-            order.orderStatus,
+            _orderStatusLabel(order.orderStatus),
             _getOrderStatusColor(order.orderStatus),
           ),
         ),
         DataCell(
           _buildBadge(
-            order.paymentStatus,
+            _paymentStatusLabel(order.paymentStatus),
             _getPaymentStatusColor(order.paymentStatus),
             isOutline: true,
           ),
@@ -247,6 +247,32 @@ class _OrderPageState extends State<OrderPage> {
         ),
       ),
     );
+  }
+
+  String _orderStatusLabel(String status) {
+    final normalized = status.toLowerCase();
+    const labels = {
+      "created": "Đã tạo",
+      "pending": "Chờ xử lý",
+      "processing": "Đang xử lý",
+      "shipped": "Đang giao",
+      "delivered": "Đã giao",
+      "canceled": "Đã hủy",
+      "cancelled": "Đã hủy",
+      "returned": "Đã trả hàng",
+      "refunded": "Hoàn tiền",
+    };
+    return labels[normalized] ?? status;
+  }
+
+  String _paymentStatusLabel(String status) {
+    final normalized = status.toLowerCase();
+    const labels = {
+      "pending": "Chờ thanh toán",
+      "paid": "Đã thanh toán",
+      "failed": "Thất bại",
+    };
+    return labels[normalized] ?? status;
   }
 
   Widget _buildSearchBar() {

@@ -36,7 +36,12 @@ class ProductController extends ChangeNotifier {
   List<ProductModel> allProducts = [];
   List<ProductModel> filteredProducts = [];
   int currentPage = 0;
-  int rowsPerPage = 10;
+  int rowsPerPage = 0;
+  void setRowsPerPage(int value) {
+    rowsPerPage = value;
+    currentPage = 0;
+    notifyListeners();
+  }
   void setData(List<ProductModel> data) {
     if (allProducts.length == data.length) return;
     allProducts = data.where((e) => e.isDeleted == false).toList();
@@ -68,6 +73,9 @@ class ProductController extends ChangeNotifier {
   }
 
   List<ProductModel> get paginatedData {
+    if (rowsPerPage <= 0 || filteredProducts.length <= rowsPerPage) {
+      return filteredProducts;
+    }
     final start = currentPage * rowsPerPage;
     final end = start + rowsPerPage;
     return filteredProducts.sublist(
@@ -78,8 +86,11 @@ class ProductController extends ChangeNotifier {
 
   int get totalPages => filteredProducts.isEmpty
       ? 1
-      : (filteredProducts.length / rowsPerPage).ceil();
+      : rowsPerPage <= 0
+          ? 1
+          : (filteredProducts.length / rowsPerPage).ceil();
   void nextPage() {
+    if (rowsPerPage <= 0) return;
     if (currentPage < totalPages - 1) {
       currentPage++;
       notifyListeners();
@@ -87,6 +98,7 @@ class ProductController extends ChangeNotifier {
   }
 
   void previousPage() {
+    if (rowsPerPage <= 0) return;
     if (currentPage > 0) {
       currentPage--;
       notifyListeners();
