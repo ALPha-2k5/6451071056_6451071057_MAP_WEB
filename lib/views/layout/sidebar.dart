@@ -39,15 +39,19 @@ class _SidebarState extends State<Sidebar> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Colors.green,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.bolt, color: Colors.white, size: 24),
+                  child: const Icon(
+                    Icons.eco_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 const Flexible(
                   child: Text(
-                    "SHOE ADMIN",
+                    "CỬA HÀNG TRÁI CÂY",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -71,7 +75,7 @@ class _SidebarState extends State<Sidebar> {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               children: [
-                _buildSectionTitle("MAIN MENU"),
+                _buildSectionTitle("MENU CHÍNH"),
                 _item(
                   Icons.dashboard_outlined,
                   "Bảng điều khiển",
@@ -80,22 +84,22 @@ class _SidebarState extends State<Sidebar> {
                 _item(Icons.category, "Danh mục sản phẩm", "/categories"),
                 _item(
                   Icons.info_outline,
-                  "Danh mục thuộc tính sản phẩm",
+                  "Thuộc tính sản phẩm",
                   "/attributes",
                 ),
                 _item(
                   Icons.branding_watermark_outlined,
-                  "Danh mục thương hiệu",
+                  "Thương hiệu",
                   "/brands",
                 ),
-                _item(Icons.card_giftcard, "Danh mục mã giảm giá", "/coupons"),
+                _item(Icons.card_giftcard, "Mã giảm giá", "/coupons"),
                 _item(Icons.inventory_2_outlined, "Sản phẩm", "/products"),
-                _buildSectionTitle("SALES"),
+                _buildSectionTitle("BÁN HÀNG"),
                 _item(Icons.shopping_cart_outlined, "Đơn hàng", "/orders"),
                 _item(Icons.people_outline, "Khách hàng", "/customers"),
                 _item(Icons.star_rate_outlined, "Đánh giá", "/reviews"),
-                _buildSectionTitle("SYSTEM"),
-                _item(Icons.settings_outlined, "Cài đặt cá nhân", "/settings"),
+                _buildSectionTitle("HỆ THỐNG"),
+                _item(Icons.settings_outlined, "Cài đặt", "/settings"),
               ],
             ),
           ),
@@ -142,12 +146,12 @@ class _SidebarState extends State<Sidebar> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: isActive
-                ? Colors.blueAccent.withOpacity(0.15)
+                ? Colors.greenAccent.withOpacity(0.15)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
             border: isActive
                 ? const Border(
-                    left: BorderSide(color: Colors.blueAccent, width: 4),
+                    left: BorderSide(color: Colors.greenAccent, width: 4),
                   )
                 : null,
           ),
@@ -155,11 +159,10 @@ class _SidebarState extends State<Sidebar> {
             children: [
               Icon(
                 icon,
-                color: isActive ? Colors.blueAccent : Colors.white60,
+                color: isActive ? Colors.greenAccent : Colors.white60,
                 size: 22,
               ),
               const SizedBox(width: 15),
-              // FIX LỖI OVERFLOW Ở ĐÂY: Dùng Expanded để Text không đẩyRow ra ngoài
               Expanded(
                 child: Text(
                   title,
@@ -169,7 +172,7 @@ class _SidebarState extends State<Sidebar> {
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
                   ),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis, // Hiện dấu ... nếu quá dài
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (isActive) ...[
@@ -178,7 +181,7 @@ class _SidebarState extends State<Sidebar> {
                   width: 6,
                   height: 6,
                   decoration: const BoxDecoration(
-                    color: Colors.blueAccent,
+                    color: Colors.greenAccent,
                     shape: BoxShape.circle,
                   ),
                 ),

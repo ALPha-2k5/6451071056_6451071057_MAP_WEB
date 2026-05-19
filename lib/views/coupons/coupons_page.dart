@@ -7,12 +7,9 @@ class CouponsPage extends StatelessWidget {
   const CouponsPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => CouponController()..fetchCoupons(),
-      child: const Scaffold(
-        backgroundColor: Color(0xFFF8F9FD),
-        body: _CouponsView(),
-      ),
+    return const Scaffold(
+      backgroundColor: Color(0xFFF8F9FD),
+      body: _CouponsView(),
     );
   }
 }

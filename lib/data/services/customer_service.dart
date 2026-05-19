@@ -5,9 +5,11 @@ class CustomerService {
   final _firestore = FirebaseFirestore.instance;
   Future<List<CustomerModel>> getCustomers() async {
     final snapshot = await _firestore.collection('users').get();
-    return snapshot.docs
-        .map((doc) => CustomerModel.fromMap(doc.data()))
-        .toList();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      data['id'] = doc.id;
+      return CustomerModel.fromMap(data);
+    }).toList();
   }
 
   Future<int> getOrdersCount(String userId) async {
@@ -38,5 +40,3 @@ class CustomerService {
     return CustomerModel.fromMap(data);
   }
 }
-
-

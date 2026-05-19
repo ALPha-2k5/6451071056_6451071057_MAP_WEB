@@ -130,6 +130,68 @@ class ProductModel {
     };
   }
 
+  static DateTime? _parseDate(dynamic date) {
+    if (date == null) return null;
+    if (date is Timestamp) return date.toDate();
+    if (date is DateTime) return date;
+    if (date is String) return DateTime.tryParse(date);
+    return null;
+  }
+
+  static bool _parseBool(dynamic value, {bool fallback = false}) {
+    if (value == null) return fallback;
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) {
+      final normalized = value.trim().toLowerCase();
+      if (normalized == 'true' || normalized == '1') return true;
+      if (normalized == 'false' || normalized == '0') return false;
+    }
+    return fallback;
+  }
+
+  static int _parseInt(dynamic value, {int fallback = 0}) {
+    if (value == null) return fallback;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? fallback;
+    return fallback;
+  }
+
+  static double _parseDouble(dynamic value, {double fallback = 0}) {
+    if (value == null) return fallback;
+    if (value is double) return value;
+    if (value is int) return value.toDouble();
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? fallback;
+    return fallback;
+  }
+
+  static List<String> _parseStringList(dynamic value) {
+    if (value == null) return [];
+    if (value is List) {
+      return value
+          .map((item) => item?.toString() ?? '')
+          .where((item) => item.isNotEmpty)
+          .toList();
+    }
+    if (value is String && value.trim().isNotEmpty) {
+      return [value.trim()];
+    }
+    return [];
+  }
+
+  static List<Map<String, dynamic>> _parseMapList(dynamic value) {
+    if (value == null) return [];
+    if (value is List) {
+      return value
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+    }
+    return [];
+  }
+
   // From Firestore
   factory ProductModel.fromMap(String id, Map<String, dynamic> map) {
     return ProductModel(
@@ -138,44 +200,48 @@ class ProductModel {
       lowerTitle: map['lowerTitle'],
       description: map['description'] ?? '',
       sku: map['sku'],
-      price: (map['price'] ?? 0).toDouble(),
-      salePrice: map['salePrice']?.toDouble(),
+      price: _parseDouble(map['price']),
+      salePrice: map['salePrice'] == null
+          ? null
+          : _parseDouble(map['salePrice']),
       thumbnail: map['thumbnail'] ?? '',
-      images: List<String>.from(map['images'] ?? []),
+      images: _parseStringList(map['images']),
       productType: ProductType.values.firstWhere(
         (e) => e.name == map['productType'],
         orElse: () => ProductType.simple,
       ),
-      stock: map['stock'] ?? 0,
-      isOutOfStock: map['isOutOfStock'],
-      soldQuantity: map['soldQuantity'] ?? 0,
+      stock: _parseInt(map['stock']),
+      isOutOfStock: map['isOutOfStock'] == null
+          ? null
+          : _parseBool(map['isOutOfStock']),
+      soldQuantity: _parseInt(map['soldQuantity']),
       brandId: map['brandId'],
-      categoryIds: List<String>.from(map['categoryIds'] ?? []),
-      tags: List<String>.from(map['tags'] ?? []),
-      attributes: List<Map<String, dynamic>>.from(map['attributes'] ?? []),
-      variations: List<Map<String, dynamic>>.from(map['variations'] ?? []),
-      isRecommended: map['isRecommended'] ?? false,
-      isFeatured: map['isFeatured'] ?? false,
-      isActive: map['isActive'] ?? true,
-      isDraft: map['isDraft'] ?? false,
-      isDeleted: map['isDeleted'] ?? false,
-      onSale: map['onSale'],
-      saleStartDate: map['saleStartDate']?.toDate(),
-      saleEndDate: map['saleEndDate']?.toDate(),
-      views: map['views'] ?? 0,
-      rating: (map['rating'] ?? 0).toDouble(),
-      ratingCount: map['ratingCount'] ?? 0,
-      reviewsCount: map['reviewsCount'] ?? 0,
-      fiveStarCount: map['fiveStarCount'] ?? 0,
-      fourStarCount: map['fourStarCount'] ?? 0,
-      threeStarCount: map['threeStarCount'] ?? 0,
-      twoStarCount: map['twoStarCount'] ?? 0,
-      oneStarCount: map['oneStarCount'] ?? 0,
-      likes: map['likes'] ?? 0,
+      categoryIds: _parseStringList(map['categoryIds']),
+      tags: _parseStringList(map['tags']),
+      attributes: _parseMapList(map['attributes']),
+      variations: _parseMapList(map['variations']),
+      isRecommended: _parseBool(map['isRecommended']),
+      isFeatured: _parseBool(map['isFeatured']),
+      isActive: _parseBool(map['isActive'], fallback: true),
+      isDraft: _parseBool(map['isDraft']),
+      isDeleted: _parseBool(map['isDeleted']),
+      onSale: map['onSale'] == null ? null : _parseBool(map['onSale']),
+      saleStartDate: _parseDate(map['saleStartDate']),
+      saleEndDate: _parseDate(map['saleEndDate']),
+      views: _parseInt(map['views']),
+      rating: _parseDouble(map['rating']),
+      ratingCount: _parseInt(map['ratingCount']),
+      reviewsCount: _parseInt(map['reviewsCount']),
+      fiveStarCount: _parseInt(map['fiveStarCount']),
+      fourStarCount: _parseInt(map['fourStarCount']),
+      threeStarCount: _parseInt(map['threeStarCount']),
+      twoStarCount: _parseInt(map['twoStarCount']),
+      oneStarCount: _parseInt(map['oneStarCount']),
+      likes: _parseInt(map['likes']),
       createdBy: map['createdBy'],
       updatedBy: map['updatedBy'],
-      createdAt: map['createdAt']?.toDate(),
-      updatedAt: map['updatedAt']?.toDate(),
+      createdAt: _parseDate(map['createdAt']),
+      updatedAt: _parseDate(map['updatedAt']),
     );
   }
 }

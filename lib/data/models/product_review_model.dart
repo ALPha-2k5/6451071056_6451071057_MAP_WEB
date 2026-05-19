@@ -31,6 +31,14 @@ class ReviewModel {
     required this.updatedAt,
     required this.isApproved,
   });
+  static DateTime _parseDate(dynamic date) {
+    if (date == null) return DateTime.now();
+    if (date is Timestamp) return date.toDate();
+    if (date is DateTime) return date;
+    if (date is String) return DateTime.tryParse(date) ?? DateTime.now();
+    return DateTime.now();
+  }
+
   factory ReviewModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return ReviewModel(
@@ -45,8 +53,8 @@ class ReviewModel {
       rating: (data['rating'] ?? 0).toDouble(),
       reviewText: data['reviewText'] ?? '',
       mediaUrls: List<String>.from(data['mediaUrls'] ?? []),
-      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (data['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: _parseDate(data['createdAt']),
+      updatedAt: _parseDate(data['updatedAt']),
       isApproved: data['isApproved'] ?? false,
     );
   }

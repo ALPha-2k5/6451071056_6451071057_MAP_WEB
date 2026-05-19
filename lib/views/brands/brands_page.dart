@@ -7,12 +7,9 @@ class BrandsPage extends StatelessWidget {
   const BrandsPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => BrandController()..loadBrands(),
-      child: const Scaffold(
-        backgroundColor: Color(0xFFF8F9FD), // Nền xám nhạt hiện đại
-        body: _BrandsView(),
-      ),
+    return const Scaffold(
+      backgroundColor: Color(0xFFF8F9FD),
+      body: _BrandsView(),
     );
   }
 }
@@ -157,7 +154,7 @@ class _BrandsView extends StatelessWidget {
                             ),
                             DataColumn(
                               label: Text(
-                                "STATUS",
+                                "TRẠNG THÁI",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.indigo,
@@ -220,10 +217,17 @@ class _BrandsView extends StatelessWidget {
                                             : null,
                                       ),
                                       const SizedBox(width: 12),
-                                      Text(
-                                        b.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.w600,
+                                      Expanded(
+                                        child: Tooltip(
+                                          message: b.name,
+                                          child: Text(
+                                            b.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],
@@ -333,7 +337,7 @@ class _BrandsView extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        isActive ? "Active" : "Inactive",
+        isActive ? "Hoạt động" : "Tạm dừng",
         style: TextStyle(
           color: isActive ? Colors.green : Colors.red,
           fontSize: 12,
@@ -399,12 +403,12 @@ class _BrandsView extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text("Delete Brand?"),
-        content: const Text("This action cannot be undone."),
+        title: const Text("Xác nhận xóa thương hiệu"),
+        content: const Text("Hành động này không thể hoàn tác."),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text("CANCEL"),
+            child: const Text("HỦY"),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -412,7 +416,7 @@ class _BrandsView extends StatelessWidget {
               await controller.delete(id);
               Navigator.pop(context);
             },
-            child: const Text("DELETE", style: TextStyle(color: Colors.white)),
+            child: const Text("XÓA", style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -439,7 +443,7 @@ class _BrandsView extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            title: Text(brand == null ? "✨ New Brand" : "📝 Edit Brand"),
+            title: Text(brand == null ? "✨ Thêm thương hiệu" : "📝 Sửa thương hiệu"),
             content: SizedBox(
               width: 550,
               child: SingleChildScrollView(
@@ -448,7 +452,7 @@ class _BrandsView extends StatelessWidget {
                     TextField(
                       controller: nameController,
                       decoration: InputDecoration(
-                        labelText: "Brand Name",
+                        labelText: "Tên thương hiệu",
                         prefixIcon: const Icon(Icons.label_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -459,7 +463,7 @@ class _BrandsView extends StatelessWidget {
                     TextField(
                       controller: imageController,
                       decoration: InputDecoration(
-                        labelText: "Logo URL",
+                        labelText: "URL logo",
                         prefixIcon: const Icon(Icons.image_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -489,14 +493,14 @@ class _BrandsView extends StatelessWidget {
                       children: [
                         Expanded(
                           child: SwitchListTile(
-                            title: const Text("Active"),
+                            title: const Text("Kích hoạt"),
                             value: isActive,
                             onChanged: (v) => setState(() => isActive = v),
                           ),
                         ),
                         Expanded(
                           child: SwitchListTile(
-                            title: const Text("Featured"),
+                            title: const Text("Nổi bật"),
                             value: isFeatured,
                             onChanged: (v) => setState(() => isFeatured = v),
                           ),
@@ -507,7 +511,7 @@ class _BrandsView extends StatelessWidget {
                     const Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Categories Management",
+                        "Quản lý danh mục",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -548,7 +552,7 @@ class _BrandsView extends StatelessWidget {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("CANCEL"),
+                child: const Text("HỦY"),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -573,15 +577,15 @@ class _BrandsView extends StatelessWidget {
                     createdAt: brand?.createdAt ?? DateTime.now(),
                     updatedAt: DateTime.now(),
                   );
-                  if (brand == null)
+                  if (brand == null) {
                     await controller.add(newBrand);
-                  else
+                  } else {
                     await controller.update(newBrand);
-                  if (brand != null) await controller.saveRelations(brand.id);
-                  Navigator.pop(context);
+                  }
+                  if (context.mounted) Navigator.pop(context);
                 },
                 child: const Text(
-                  "SAVE BRAND",
+                  "LƯU THƯƠNG HIỆU",
                   style: TextStyle(color: Colors.white),
                 ),
               ),

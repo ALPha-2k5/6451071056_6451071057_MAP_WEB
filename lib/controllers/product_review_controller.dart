@@ -76,4 +76,3 @@ class ReviewController extends ChangeNotifier {
     await reviewService.approveAndUpdateProduct(review);
   }
 }
-

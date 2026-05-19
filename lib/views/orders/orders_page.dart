@@ -34,23 +34,34 @@ class _OrderPageState extends State<OrderPage> {
   /// LOGIC MÀU SẮC CHO ORDER STATUS
   Color _getOrderStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'pending': return Colors.orange;
-      case 'processing': return Colors.lightBlue;
-      case 'shipped': return Colors.blueAccent;
-      case 'delivered': return Colors.green;
-      case 'canceled': return Colors.red;
-      case 'returned': return Colors.purple;
-      case 'refunded': return Colors.blueGrey;
-      default: return Colors.grey;
+      case 'pending':
+        return Colors.orange;
+      case 'processing':
+        return Colors.lightBlue;
+      case 'shipped':
+        return Colors.blueAccent;
+      case 'delivered':
+        return Colors.green;
+      case 'canceled':
+        return Colors.red;
+      case 'returned':
+        return Colors.purple;
+      case 'refunded':
+        return Colors.blueGrey;
+      default:
+        return Colors.grey;
     }
   }
 
   /// LOGIC MÀU SẮC CHO PAYMENT STATUS
   Color _getPaymentStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'paid': return Colors.green;
-      case 'pending': return Colors.redAccent;
-      default: return Colors.grey;
+      case 'paid':
+        return Colors.green;
+      case 'pending':
+        return Colors.redAccent;
+      default:
+        return Colors.grey;
     }
   }
 
@@ -67,7 +78,7 @@ class _OrderPageState extends State<OrderPage> {
                 children: [
                   /// HEADER
                   const Text(
-                    "Order Management",
+                    "Quản lý đơn hàng",
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -114,20 +125,23 @@ class _OrderPageState extends State<OrderPage> {
                               headingRowHeight: 60,
                               columnSpacing: 35,
                               columns: const [
-                                DataColumn(label: _HeaderLabel("Seq")),
-                                DataColumn(label: _HeaderLabel("Order ID")),
-                                DataColumn(label: _HeaderLabel("Customer")),
-                                DataColumn(label: _HeaderLabel("Item")),
-                                DataColumn(label: _HeaderLabel("Order Status")),
-                                DataColumn(label: _HeaderLabel("Payment")),
-                                DataColumn(label: _HeaderLabel("Amount")),
-                                DataColumn(label: _HeaderLabel("Date")),
-                                DataColumn(label: _HeaderLabel("Action")),
+                                DataColumn(label: _HeaderLabel("STT")),
+                                DataColumn(label: _HeaderLabel("Mã đơn")),
+                                DataColumn(label: _HeaderLabel("Khách hàng")),
+                                DataColumn(label: _HeaderLabel("Số SP")),
+                                DataColumn(label: _HeaderLabel("Trạng thái")),
+                                DataColumn(label: _HeaderLabel("Thanh toán")),
+                                DataColumn(label: _HeaderLabel("Tổng tiền")),
+                                DataColumn(label: _HeaderLabel("Ngày")),
+                                DataColumn(label: _HeaderLabel("Thao tác")),
                               ],
                               rows: controller.filteredOrders
                                   .asMap()
                                   .entries
-                                  .map((entry) => _buildDataRow(entry.value, entry.key))
+                                  .map(
+                                    (entry) =>
+                                        _buildDataRow(entry.value, entry.key),
+                                  )
                                   .toList(),
                             ),
                           ),
@@ -148,7 +162,10 @@ class _OrderPageState extends State<OrderPage> {
         DataCell(
           Text(
             "#${order.id}",
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
+            ),
           ),
         ),
         DataCell(
@@ -168,17 +185,22 @@ class _OrderPageState extends State<OrderPage> {
           ),
         ),
         DataCell(Text("${order.itemCount} sp")),
-        DataCell(_buildBadge(order.orderStatus, _getOrderStatusColor(order.orderStatus))),
         DataCell(
           _buildBadge(
-            order.paymentStatus,
+            _orderStatusLabel(order.orderStatus),
+            _getOrderStatusColor(order.orderStatus),
+          ),
+        ),
+        DataCell(
+          _buildBadge(
+            _paymentStatusLabel(order.paymentStatus),
             _getPaymentStatusColor(order.paymentStatus),
             isOutline: true,
           ),
         ),
         DataCell(
           Text(
-            "\$${order.totalAmount.toStringAsFixed(0)}",
+            "${NumberFormat("#,###").format(order.totalAmount)} đ",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -189,11 +211,17 @@ class _OrderPageState extends State<OrderPage> {
               _buildActionIcon(Icons.remove_red_eye, Colors.blue, () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => OrderDetailPage(order: order)),
+                  MaterialPageRoute(
+                    builder: (_) => OrderDetailPage(order: order),
+                  ),
                 );
               }),
               const SizedBox(width: 8),
-              _buildActionIcon(Icons.delete_sweep, Colors.red, () => _confirmDelete(order)),
+              _buildActionIcon(
+                Icons.delete_sweep,
+                Colors.red,
+                () => _confirmDelete(order),
+              ),
             ],
           ),
         ),
@@ -219,6 +247,32 @@ class _OrderPageState extends State<OrderPage> {
         ),
       ),
     );
+  }
+
+  String _orderStatusLabel(String status) {
+    final normalized = status.toLowerCase();
+    const labels = {
+      "created": "Đã tạo",
+      "pending": "Chờ xử lý",
+      "processing": "Đang xử lý",
+      "shipped": "Đang giao",
+      "delivered": "Đã giao",
+      "canceled": "Đã hủy",
+      "cancelled": "Đã hủy",
+      "returned": "Đã trả hàng",
+      "refunded": "Hoàn tiền",
+    };
+    return labels[normalized] ?? status;
+  }
+
+  String _paymentStatusLabel(String status) {
+    final normalized = status.toLowerCase();
+    const labels = {
+      "pending": "Chờ thanh toán",
+      "paid": "Đã thanh toán",
+      "failed": "Thất bại",
+    };
+    return labels[normalized] ?? status;
   }
 
   Widget _buildSearchBar() {
@@ -302,7 +356,10 @@ class _HeaderLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label,
-      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        color: Colors.black87,
+      ),
     );
   }
 }

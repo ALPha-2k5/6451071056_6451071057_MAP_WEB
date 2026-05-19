@@ -25,17 +25,11 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        return web;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return web;
       case TargetPlatform.linux:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return web;
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -44,38 +38,29 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCtQyzvaXcahnluQcUA-SfLfQa4I_BelVU',
-    appId: '1:233797330677:web:1144538c1e2448281547bc',
-    messagingSenderId: '233797330677',
-    projectId: 'map-lab-utc2-e-commerce',
-    authDomain: 'map-lab-utc2-e-commerce.firebaseapp.com',
-    databaseURL: 'https://map-lab-utc2-e-commerce-defaultrtdb.firebaseio.com',
-    storageBucket: 'map-lab-utc2-e-commerce.firebasestorage.app',
+    apiKey: 'AIzaSyCO4tj--efEhryWAXkNwXXnZbLGyY_ZjFA',
+    appId: '1:631074193956:web:e95076f24598105c350eb1',
+    messagingSenderId: '631074193956',
+    projectId: 'vs6451071057',
+    authDomain: 'vs6451071057.firebaseapp.com',
+    storageBucket: 'vs6451071057.firebasestorage.app',
+    measurementId: 'G-7DZ707184Z',
   );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA0QeNGSqyEFdGnBA7RGj1eX7eg8DszWCw',
-    appId: '1:233797330677:android:7a2085ef1aae5efd1547bc',
-    messagingSenderId: '233797330677',
-    projectId: 'map-lab-utc2-e-commerce',
-    databaseURL: 'https://map-lab-utc2-e-commerce-defaultrtdb.firebaseio.com',
-    storageBucket: 'map-lab-utc2-e-commerce.firebasestorage.app',
+    apiKey: 'AIzaSyD5DOHyELN5t-376lmot8BQHJvIrQG8sJs',
+    appId: '1:631074193956:android:4b4110070889795a350eb1',
+    messagingSenderId: '631074193956',
+    projectId: 'vs6451071057',
+    storageBucket: 'vs6451071057.firebasestorage.app',
   );
+
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCXZUSrEE1I3At-sYipZmJ61BDYlEVVGA0',
-    appId: '1:233797330677:ios:f64bcee6160714301547bc',
-    messagingSenderId: '233797330677',
-    projectId: 'map-lab-utc2-e-commerce',
-    databaseURL: 'https://map-lab-utc2-e-commerce-defaultrtdb.firebaseio.com',
-    storageBucket: 'map-lab-utc2-e-commerce.firebasestorage.app',
-    iosBundleId: 'com.example.drafProjectWeb',
-  );
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCXZUSrEE1I3At-sYipZmJ61BDYlEVVGA0',
-    appId: '1:233797330677:ios:f64bcee6160714301547bc',
-    messagingSenderId: '233797330677',
-    projectId: 'map-lab-utc2-e-commerce',
-    databaseURL: 'https://map-lab-utc2-e-commerce-defaultrtdb.firebaseio.com',
-    storageBucket: 'map-lab-utc2-e-commerce.firebasestorage.app',
-    iosBundleId: 'com.example.drafProjectWeb',
+    apiKey: 'AIzaSyDpj8n-wsLYf3UMgj-LS1lHwu_HcSX5KOw',
+    appId: '1:631074193956:ios:c77a7df504b78ec7350eb1',
+    messagingSenderId: '631074193956',
+    projectId: 'vs6451071057',
+    storageBucket: 'vs6451071057.firebasestorage.app',
+    iosBundleId: 'com.example.thuchanh',
   );
 }

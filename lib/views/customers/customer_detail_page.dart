@@ -55,7 +55,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     }
   }
 
-  double get totalSpent => orders.fold(0, (sum, item) => sum + item.totalAmount);
+  double get totalSpent =>
+      orders.fold(0, (sum, item) => sum + item.totalAmount);
 
   double get averageOrderValue =>
       orders.isEmpty ? 0 : totalSpent / orders.length;
@@ -63,9 +64,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
   DateTime? get lastOrderDate {
     if (orders.isEmpty) return null;
     final sortedOrders = List<OrderModel>.from(orders);
-    sortedOrders.sort(
-      (a, b) => b.orderDate.compareTo(a.orderDate),
-    );
+    sortedOrders.sort((a, b) => b.orderDate.compareTo(a.orderDate));
     return sortedOrders.first.orderDate;
   }
 
@@ -73,6 +72,8 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
     if (date == null) return "-";
     return DateFormat('dd/MM/yyyy HH:mm').format(date);
   }
+
+  String _money(num value) => NumberFormat("#,###").format(value);
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +125,9 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         Center(
                           child: CircleAvatar(
                             radius: 40,
-                            backgroundColor: const Color(0xFF4318FF).withOpacity(0.1),
+                            backgroundColor: const Color(
+                              0xFF4318FF,
+                            ).withOpacity(0.1),
                             child: Text(
                               widget.customer.firstName.isNotEmpty
                                   ? widget.customer.firstName[0].toUpperCase()
@@ -151,7 +154,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                         infoRow("Last Order", formatDate(lastOrderDate)),
                         infoRow(
                           "Avg Order Value",
-                          "\$${averageOrderValue.toStringAsFixed(2)}",
+                          "${_money(averageOrderValue)} đ",
                         ),
                         infoRow(
                           "Register Date",
@@ -216,12 +219,18 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                           ),
                                         ),
                                       ),
-                                      DataCell(Text(formatDate(order.orderDate))),
-                                      DataCell(Text(order.itemCount.toString())),
-                                      DataCell(_buildStatusBadge(order.orderStatus)),
+                                      DataCell(
+                                        Text(formatDate(order.orderDate)),
+                                      ),
+                                      DataCell(
+                                        Text(order.itemCount.toString()),
+                                      ),
+                                      DataCell(
+                                        _buildStatusBadge(order.orderStatus),
+                                      ),
                                       DataCell(
                                         Text(
-                                          "\$${order.totalAmount.toStringAsFixed(2)}",
+                                          "${_money(order.totalAmount)} đ",
                                           style: const TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -251,7 +260,7 @@ class _CustomerDetailPageState extends State<CustomerDetailPage> {
                                 ),
                               ),
                               Text(
-                                "Total spent \$${totalSpent.toStringAsFixed(2)} on ${orders.length} orders",
+                                "Total spent ${_money(totalSpent)} đ on ${orders.length} orders",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Color(0xFF4318FF),
